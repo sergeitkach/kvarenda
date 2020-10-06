@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='utf-8' />
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+
+		<script src='Kvarenda.js'></script>
+		<script type='text/javascript'>
+
+			function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime){
+
+				let result = Kvarenda.calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime);
+
+				if (Kvarenda.error){
+
+					let errorBlock = document.getElementById('error');
+					errorBlock.innerHTML = Kvarenda.error;
+
+				}else{
+
+					let paramsTable = '<table>';
+
+					paramsTable = paramsTable + '<tr><td class="bold">Стоимость квартиры</td><td class="bold">' + result.propertyCost + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Наш кредит - ставка</td><td>' + result.ownCreditRate + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Ставка, аннуит, год</td><td>' + result.clientAnnuityRate + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td class="bold">Платёж нам в месяц</td><td class="bold">' + result.clientMonthlyPayment + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Срок строительства, мес</td><td>' + result.constructionTime + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Гарантийный взнос, мес</td><td>' + result.guaranteeFeeMonth + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Первоначальный взнос, мес</td><td>' + result.initialFeeMonth + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Срок, месяцев</td><td>' + result.creditTerm + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td class="bold">Кол-во платежей</td><td class="bold">' + result.paymentsNumber + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Ставка клиента, мес</td><td>' + result.clientRate + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Аннуитетный платёж</td><td>' + result.annuityPayment + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td class="bold">Гарантийный взнос, руб</td><td class="bold">' + result.guaranteeFee + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Арендный платёж в мес</td><td>' + result.rentPayment + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td class="bold">Первонач взнос, руб</td><td class="bold">' + result.initialFee + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Аннуитет со взносом</td><td>' + result.annuityWithFee + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Дисконт на продажу квартиры</td><td>' + result.saleDiscount + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Комиссия агентства</td><td>' + result.agencyCommission + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Итого потеря, руб</td><td>' + result.totalLost + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Срок продажи квартиры, мес</td><td>' + result.saleTime + '</td></tr>';
+
+					paramsTable = paramsTable + '</table>';
+
+					let paramsBlock = document.getElementById('params');
+					paramsBlock.innerHTML = paramsTable;
+
+					let modelTable ='<table><tr><th></th><th class="blue">Аннуитет: Задолженность</th><th class="blue">Аннуитет: Проценты</th><th class="blue">Аннуитет: Тело</th><th class="blue">Аннуитет: Платёж</th><th class="green">Дифф: Задолженность</th><th class="green">Дифф: Проценты</th><th class="green">Дифф: Тело</th><th class="green">Дифф: Платёж</th><th class="red">Плат: Задолженность</th><th class="red">Плат: Аренда</th><th class="red">Плат: Выкуп</th><th class="red">Плат: Итого</th><th class="yellow">Досрочность: Наш доход</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность:  Среднемес</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность: Выхлоп</th><th class="yellow">Досрочность: Выкуп S</th><th class="yellow">Досрочность: Штраф calc</th><th class="yellow">Досрочность: Штраф макс</th><th class="yellow">Досрочность: Макс год</th><th class="yellow">Досрочность: Доход</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Среднемес</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Мы заплатили</th><th class="light-blue">Соскок: Мы получили</th><th class="light-blue">Соскок: Выхлоп</th><th class="light-blue">Соскок: Нужен доход</th><th class="light-blue">Соскок: Излишек</th><th class="light-blue">Соскок: S выкуп платежей</th><th class="light-blue">Соскок: Возврат</th><th class="light-blue">Соскок: Штраф</th><th class="light-blue">Соскок: Штраф макс</th><th class="light-blue">Соскок: Штраф <= выкуп</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr>';
+					
+					result.model.forEach(function(item, i, arr) {
+						modelTable = modelTable + '<tr>';
+
+						modelTable = modelTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.annuity_debt) === 'undefined') ? '' : Math.round(item.annuity_debt)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.annuity_percents) === 'undefined') ? '' : Math.round(item.annuity_percents)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.annuity_body) === 'undefined') ? '' : Math.round(item.annuity_body)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.annuity_pmt) === 'undefined') ? '' : Math.round(item.annuity_pmt)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.diff_debt) === 'undefined') ? '' : Math.round(item.diff_debt)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.diff_percents) === 'undefined') ? '' : Math.round(item.diff_percents)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.diff_body) === 'undefined') ? '' : Math.round(item.diff_body)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.diff_pmt) === 'undefined') ? '' : Math.round(item.diff_pmt)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.pmt_debt) === 'undefined') ? '' : Math.round(item.pmt_debt)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)) + '</td>';
+
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_profit) === 'undefined') ? '' : Math.round(item.earlyFee_profit)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_profitGrow) === 'undefined') ? '' : Math.round(item.earlyFee_profitGrow)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_average) === 'undefined') ? '' : Math.round(item.earlyFee_average)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_averageGrow) === 'undefined') ? '' : Math.round(item.earlyFee_averageGrow)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_waste) === 'undefined') ? '' : Math.round(item.earlyFee_waste)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_buyout) === 'undefined') ? '' : Math.round(item.earlyFee_buyout)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_fine) === 'undefined') ? '' : Math.round(item.earlyFee_fine)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_fineMax) === 'undefined') ? '' : Math.round(item.earlyFee_fineMax)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_income) === 'undefined') ? '' : Math.round(item.earlyFee_income)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_norm) === 'undefined') ? '' : Math.round(item.earlyFee_norm*100)+'%') + '</td>';
+
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_profit) === 'undefined') ? '' : Math.round(item.breakdown_profit)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_profitGrow) === 'undefined') ? '' : Math.round(item.breakdown_profitGrow)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_average) === 'undefined') ? '' : Math.round(item.breakdown_average)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_averageGrow) === 'undefined') ? '' : Math.round(item.breakdown_averageGrow)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_paid) === 'undefined') ? '' : Math.round(item.breakdown_paid)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_received) === 'undefined') ? '' : Math.round(item.breakdown_received)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_waste) === 'undefined') ? '' : Math.round(item.breakdown_waste)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_need) === 'undefined') ? '' : Math.round(item.breakdown_need)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_over) === 'undefined') ? '' : Math.round(item.breakdown_over)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_return) === 'undefined') ? '' : Math.round(item.breakdown_return)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fine) === 'undefined') ? '' : Math.round(item.breakdown_fine)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMax) === 'undefined') ? '' : Math.round(item.breakdown_fineMax)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineBuyout) === 'undefined') ? '' : Math.round(item.breakdown_fineBuyout)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineBuyoutPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineBuyoutPercents*100)+'%') + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%') + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_totalIncome) === 'undefined') ? '' : Math.round(item.breakdown_totalIncome)) + '</td>';
+						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_totalIncomePercents) === 'undefined') ? '' : Math.round(item.breakdown_totalIncomePercents*100)+'%') + '</td>';
+
+						modelTable = modelTable + '</tr>';
+					});
+					modelTable = modelTable + '</table>';
+
+					let modelBlock = document.getElementById('model');
+					modelBlock.innerHTML = modelTable;
+				}
+
+			}
+
+			window.onload = function(){
+
+				let button = document.getElementById('calc');
+				button.onclick = function() {
+					let errorBlock = document.getElementById('error');
+					errorBlock.innerHTML = '';
+					calc(
+						document.getElementById('propertyCost').value ? parseFloat(document.getElementById('propertyCost').value) : 0,
+						document.getElementById('clientMonthlyPayment').value ? parseFloat(document.getElementById('clientMonthlyPayment').value) : 0,
+						document.getElementById('paymentsNumber').value ? parseFloat(document.getElementById('paymentsNumber').value) : 0,
+						document.getElementById('initialFee').value ? parseFloat(document.getElementById('initialFee').value) : 0,
+						document.getElementById('constructionTime').value ? parseFloat(document.getElementById('constructionTime').value) : 0);
+				};
+
+			}
+
+		</script>
+		<style>
+			#model th,
+			#model td{
+				border: 1px solid black;
+			}
+			#error{
+				color: red;
+			}
+			.bold{
+				font-weight: bold;
+			}
+			.blue{
+				background-color: rgb(217, 226, 243);
+			}
+			.light-blue{
+				background-color: rgb(222, 235, 246);
+			}
+			.green{
+				background-color: rgb(226, 239, 217);
+			}
+			.red{
+				background-color: rgb(251, 228, 213);
+			}
+			.yellow{
+				background-color: rgb(255, 243, 203);
+			}
+		</style>
+	</head>
+	<body>
+		<div id='form'>
+			<input name='propertyCost' placeholder='propertyCost' id='propertyCost' type='number'>
+			<input name='clientMonthlyPayment' placeholder='clientMonthlyPayment' id='clientMonthlyPayment' type='number'>
+			<input name='paymentsNumber' placeholder='paymentsNumber' id='paymentsNumber' type='number'>
+			<input name='initialFee' placeholder='initialFee' id='initialFee' type='number'>
+			<input name='constructionTime' placeholder='constructionTime' id='constructionTime' type='number'>
+			<input type='submit' id='calc' value='calc'>
+		</div>
+		<div id='Kvarenda'>
+			<div id='error'>
+			</div>
+			<div id='params'>
+			</div>
+			<div id='model'>
+			</div>
+		</div>
+	</body>
+</html>
