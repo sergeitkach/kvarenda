@@ -5,6 +5,7 @@ let Kvarenda = {
 	saleDiscount: 0.10,
 	agencyCommission: 0.025,
 	saleTime: 3,
+	requiredIncomeRatio: 1,
 
 	guaranteeFeeMonth: 0,
 	initialFeeMonth: 0,
@@ -535,7 +536,7 @@ Kvarenda.setBreakdownNeed = function(data){
 			return;
 		}
 
-		item.breakdown_need = i * item.breakdown_average;
+		item.breakdown_need = i * item.breakdown_average * Kvarenda.requiredIncomeRatio;
 
 	});
 

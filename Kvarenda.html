@@ -39,6 +39,7 @@
 					paramsTable = paramsTable + '<tr><td>Комиссия агентства</td><td>' + result.agencyCommission + '</td></tr>';
 					paramsTable = paramsTable + '<tr><td>Итого потеря, руб</td><td>' + result.totalLost + '</td></tr>';
 					paramsTable = paramsTable + '<tr><td>Срок продажи квартиры, мес</td><td>' + result.saleTime + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Коэффициент необходимого дохода</td><td>' + result.requiredIncomeRatio + '</td></tr>';
 
 					paramsTable = paramsTable + '</table>';
 
@@ -110,8 +111,14 @@
 
 				let button = document.getElementById('calc');
 				button.onclick = function() {
+
 					let errorBlock = document.getElementById('error');
 					errorBlock.innerHTML = '';
+					let paramsBlock = document.getElementById('params');
+					paramsBlock.innerHTML = '';
+					let modelBlock = document.getElementById('model');
+					modelBlock.innerHTML = '';
+
 					calc(
 						document.getElementById('propertyCost').value ? parseFloat(document.getElementById('propertyCost').value) : 0,
 						document.getElementById('clientMonthlyPayment').value ? parseFloat(document.getElementById('clientMonthlyPayment').value) : 0,
