@@ -873,6 +873,16 @@ Kvarenda.getPreResult = function(propertyCost=0, clientMonthlyPayment=0, payment
 
 Kvarenda.calc = function(propertyCost=0, clientMonthlyPayment=0, paymentsNumber=0, initialFee=0, constructionTime=0){
 
+	if((propertyCost==0 && clientMonthlyPayment==0 && paymentsNumber==0)||
+		(propertyCost==0 && clientMonthlyPayment==0)||
+		(propertyCost==0 && paymentsNumber==0)||
+		(clientMonthlyPayment==0 && paymentsNumber==0)){
+
+		Kvarenda.error = 'RequiredParametersError';
+		return Kvarenda;
+
+	}
+
 	Kvarenda.initKvarenda();
 
 	if (clientMonthlyPayment!=0 && clientMonthlyPayment <= (propertyCost - initialFee) * Kvarenda.getClientRate()){
