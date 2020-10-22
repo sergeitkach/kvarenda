@@ -1,10 +1,16 @@
-function getCustomerTablePDF(header='', subheader='', text='', tableData){
+function getCustomerTablePDF(header='', subheader='', text='', paramsData, tableData){
 
 	let docDefinition = {
 		content: [
 			{text: header, style: 'header'},
 			{text: subheader, style: 'subheader'},
 			text,
+			{
+				style: 'table',
+				table: {
+					body: paramsData
+				}
+			},
 			{
 				style: 'table',
 				table: {

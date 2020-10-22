@@ -1,11 +1,14 @@
 let Kvarenda = {
 
+	eps: 0.0000000001,
+
 	ownCreditRate: 0.08,
 	clientAnnuityRate: 0.12,
 	saleDiscount: 0.10,
 	agencyCommission: 0.025,
 	saleTime: 3,
 	requiredIncomeRatio: 1,
+	nonPaymentMonth: 3,
 
 	guaranteeFeeMonth: 0,
 	initialFeeMonth: 0,
@@ -26,6 +29,26 @@ let Kvarenda = {
 
 	model: {},
 	error: null
+
+}
+
+Kvarenda.CompareNumbers = function(a, b, equally=false, more=false, less=false){
+
+	let result = null;
+
+	if ((!equally && !more && !less) || (equally && more && less)){
+		return result;
+	}else if(equally && !more && !less){
+		result = Math.abs(a-b) < Kvarenda.eps;
+	}else if(equally && more && !less){
+		result = (a > b) || (Math.abs(a-b) < Kvarenda.eps);
+	}else if(equally && less && !more){
+		result = (a < b) || (Math.abs(a-b) < Kvarenda.eps)
+	}else if(more && less && !equally){
+		result = result = Math.abs(a-b) > Kvarenda.eps;
+	}
+
+	return result;
 
 }
 
@@ -160,11 +183,11 @@ Kvarenda.getAnnuityPmt = function(annuity_body, annuity_percents){
 }
 
 Kvarenda.getPmtRent = function(i){
-	return (i <= Kvarenda.constructionTime ? 0 : Kvarenda.rentPayment) * (i <= Kvarenda.creditTerm - Kvarenda.guaranteeFeeMonth - Kvarenda.initialFeeMonth ? 1 : 0);
+	return (i <= Kvarenda.constructionTime ? 0 : Kvarenda.rentPayment) * (Kvarenda.CompareNumbers(i, Kvarenda.creditTerm - Kvarenda.guaranteeFeeMonth - Kvarenda.initialFeeMonth, true, false, true) ? 1 : 0);
 }
 
 Kvarenda.getPmtBuyout = function(i, pmt_rent){
-	return (Kvarenda.clientMonthlyPayment - pmt_rent) * (i <= Kvarenda.creditTerm - Kvarenda.guaranteeFeeMonth - Kvarenda.initialFeeMonth ? 1 : 0) + (i==1 ? Kvarenda.guaranteeFee + Kvarenda.initialFee : 0);
+	return (Kvarenda.clientMonthlyPayment - pmt_rent) * (Kvarenda.CompareNumbers(i, Kvarenda.creditTerm - Kvarenda.guaranteeFeeMonth - Kvarenda.initialFeeMonth, true, false, true) ? 1 : 0) + (i==1 ? Kvarenda.guaranteeFee + Kvarenda.initialFee : 0);
 }
 
 Kvarenda.getPmtDebt = function(prevPmt_debt, pmt_buyout){
@@ -496,9 +519,31 @@ Kvarenda.setBreakdownPaid = function(data){
 
 }
 
-Kvarenda.setBreakdownReceived = function(data){
+Kvarenda.getPmtTotalSumForRow = function(data, index){
+
+	index = index - Kvarenda.nonPaymentMonth;
+
+	if (index <= 0){
+		return data[1].pmt_total;
+	}
 
 	let totalSum = 0;
+
+	let i = 1;
+
+	while (i <= index) {
+
+		totalSum = totalSum + data[i].pmt_total;
+
+		i++;
+
+	}
+
+	return totalSum;
+
+}
+
+Kvarenda.setBreakdownReceived = function(data){
 
 	data.forEach(function(item, i, arr) {
 
@@ -506,7 +551,7 @@ Kvarenda.setBreakdownReceived = function(data){
 			return;
 		}
 
-		totalSum = totalSum + item.pmt_total;
+		let totalSum = Kvarenda.getPmtTotalSumForRow(data, i);
 
 		item.breakdown_received = (totalSum + Kvarenda.propertyCost - Kvarenda.totalLost)*(item.breakdown_average == 0? 0 : 1);
 
@@ -894,7 +939,19 @@ Kvarenda.calc = function(propertyCost=0, clientMonthlyPayment=0, paymentsNumber=
 
 		Kvarenda.getPreResult(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime);
 
-		if(Kvarenda.model.length >= 2 && Kvarenda.model[1].breakdown_totalIncomePercents > 0){
+		let breakdown_totalIncomePercentsMin = 0;
+
+		Kvarenda.model.forEach(function(item, i, arr) {
+
+			if(i==0){
+				return;
+			}
+
+			breakdown_totalIncomePercentsMin = Math.min(breakdown_totalIncomePercentsMin, item.breakdown_totalIncomePercents);
+
+		});
+
+		if(Kvarenda.CompareNumbers(breakdown_totalIncomePercentsMin, 0, true)){
 			break;
 		}
 

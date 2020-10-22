@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='utf-8' />
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+
+		<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/pdfmake.min.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
+
+		<script src='Kvarenda.js'></script>
+		<script src='KvarendaPDF.js'></script>
+		<script type='text/javascript'>
+
+			function initPdfBtn(paramsData, tableData){
+
+				let pdfBtn = document.getElementById('get-pdf');
+				pdfBtn.onclick = function() {
+
+					let header = 'Kvarenda';
+					let subheader = 'Kvarenda customer table';
+					let text = 'Customer table';
+
+					getCustomerTablePDF(header, subheader, text, paramsData, tableData);
+
+				}
+
+			}
+
+			function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime){
+
+				let result = Kvarenda.calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime);
+
+				if (Kvarenda.error){
+
+					let errorBlock = document.getElementById('error');
+					errorBlock.innerHTML = Kvarenda.error;
+
+				}else{
+				
+					let paramsTable = '<table>';
+					let paramsData = [];
+					paramsData.push(
+										[{text:'Стоимость квартиры', style:'tableHeader'}, result.propertyCost],
+										[{text:'Ежемесячный платёж', style:'tableHeader'}, result.clientMonthlyPayment],
+										[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
+										[{text:'Начальный взнос', style:'tableHeader'}, result.guaranteeFee + result.initialFee]
+									);
+
+					paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + result.propertyCost + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + result.clientMonthlyPayment + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Количество платежей</td><td>' + result.paymentsNumber + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + (result.guaranteeFee + result.initialFee) + '</td></tr>';
+
+					paramsTable = paramsTable + '</table>';
+
+					let paramsBlock = document.getElementById('params');
+					paramsBlock.innerHTML = paramsTable;
+
+					let customerTable ='<table><tr><th>Дата</th><th>Арендный платёж</th><th>Выкупной платёж со взносами</th><th>Итого платёж</th><th>Комиссия за досрочное погашение</th><th>Сумма выкупных платежей</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма</th><th>Возврат</th></tr>';
+
+					let tableData = [];
+					tableData.push([
+									{
+										text: 'Дата',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Арендный платёж',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Выкупной платёж со взносами',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Итого платёж',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Комиссия за досрочное погашение',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Сумма выкупных платежей',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Штраф за расторжение: % от выкупных платежей',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Штраф за расторжение: сумма',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Возврат',
+										style: 'tableHeader'
+									}
+								]);
+
+					result.model.forEach(function(item, i, arr) {
+
+						if(i==0){
+							return;
+						}
+
+						customerTable = customerTable + '<tr>';
+
+						customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%') + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)) + '</td>';
+
+						customerTable = customerTable + '</tr>';
+
+						tableData.push([
+							((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
+							((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)),
+							((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)),
+							((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)),
+							((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)),
+							((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)),
+							((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%'),
+							((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)),
+							((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))
+						]);
+
+					});
+
+					customerTable = customerTable + '</table>';
+
+					let customerTableBlock = document.getElementById('customer-table');
+					customerTableBlock.innerHTML = customerTable;
+
+					let pdfBlock = document.getElementById('pdf-block');
+					pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='get PDF'>";
+					initPdfBtn(paramsData, tableData);
+
+				}
+
+			}
+
+			window.onload = function(){
+
+				let button = document.getElementById('calc');
+				button.onclick = function() {
+
+					let errorBlock = document.getElementById('error');
+					errorBlock.innerHTML = '';
+					let pdfBlock = document.getElementById('pdf-block');
+					pdfBlock.innerHTML = '';
+					let paramsBlock = document.getElementById('params');
+					paramsBlock.innerHTML = '';
+					let customerTableBlock = document.getElementById('customer-table');
+					customerTableBlock.innerHTML = '';
+
+					calc(
+						document.getElementById('propertyCost').value ? parseFloat(document.getElementById('propertyCost').value) : 0,
+						document.getElementById('clientMonthlyPayment').value ? parseFloat(document.getElementById('clientMonthlyPayment').value) : 0,
+						document.getElementById('paymentsNumber').value ? parseFloat(document.getElementById('paymentsNumber').value) : 0,
+						document.getElementById('initialFee').value ? parseFloat(document.getElementById('initialFee').value) : 0,
+						document.getElementById('constructionTime').value ? parseFloat(document.getElementById('constructionTime').value) : 0);
+				};
+
+			}
+
+		</script>
+		<style>
+			#form{
+				margin-bottom: 50px;
+			}
+			#pdf-block,
+			#params{
+				margin-bottom: 20px;
+			}
+			#customer-table th,
+			#customer-table td{
+				border: 1px solid black;
+			}
+			#error{
+				color: red;
+			}
+			.bold{
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='form'>
+			<input name='propertyCost' placeholder='propertyCost' id='propertyCost' type='number'>
+			<input name='clientMonthlyPayment' placeholder='clientMonthlyPayment' id='clientMonthlyPayment' type='number'>
+			<input name='paymentsNumber' placeholder='paymentsNumber' id='paymentsNumber' type='number'>
+			<input name='initialFee' placeholder='initialFee' id='initialFee' type='number'>
+			<input name='constructionTime' placeholder='constructionTime' id='constructionTime' type='number'>
+			<input type='submit' id='calc' value='calc'>
+		</div>
+		<div id='Kvarenda'>
+			<div id='error'>
+			</div>
+			<div id='pdf-block'>
+			</div>
+			<div id='params'>
+			</div>
+			<div id='customer-table'>
+			</div>
+		</div>
+	</body>
+</html>
