@@ -40,16 +40,16 @@
 					let paramsTable = '<table>';
 					let paramsData = [];
 					paramsData.push(
-										[{text:'Стоимость квартиры', style:'tableHeader'}, result.propertyCost],
-										[{text:'Ежемесячный платёж', style:'tableHeader'}, result.clientMonthlyPayment],
+										[{text:'Стоимость квартиры', style:'tableHeader'}, result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
+										[{text:'Ежемесячный платёж', style:'tableHeader'}, result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
 										[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
-										[{text:'Начальный взнос', style:'tableHeader'}, result.guaranteeFee + result.initialFee]
+										[{text:'Начальный взнос', style:'tableHeader'}, (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})]
 									);
 
-					paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + result.propertyCost + '</td></tr>';
-					paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + result.clientMonthlyPayment + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
 					paramsTable = paramsTable + '<tr><td>Количество платежей</td><td>' + result.paymentsNumber + '</td></tr>';
-					paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + (result.guaranteeFee + result.initialFee) + '</td></tr>';
+					paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
 
 					paramsTable = paramsTable + '</table>';
 
@@ -107,27 +107,27 @@
 						customerTable = customerTable + '<tr>';
 
 						customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%') + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)) + '</td>';
-						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+						customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
 
 						customerTable = customerTable + '</tr>';
 
 						tableData.push([
 							((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
-							((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)),
-							((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)),
-							((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)),
-							((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)),
-							((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)),
-							((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%'),
-							((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)),
-							((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))
+							((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})),
+							((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}),
+							((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : (item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})
 						]);
 
 					});

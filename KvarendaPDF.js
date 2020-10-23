@@ -36,12 +36,12 @@ function getCustomerTablePDF(header='', subheader='', text='', paramsData, table
 			},
 			table: {
 				margin: [0, 15, 0, 15],
-				fontSize: 9,
+				fontSize: 6,
 				alignment: 'right'
 			},
 			tableHeader: {
 				bold: true,
-				fontSize: 10,
+				fontSize: 7,
 				color: 'black',
 				alignment: 'center'
 			}
