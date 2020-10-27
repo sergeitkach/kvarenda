@@ -1,0 +1,253 @@
+<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@3d6a76a244865bc9e4eea11c9bff9b1f5e5788a8/Kvarenda.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@3d612b396563366437aaf3450c68b286c0214fb8/KvarendaPDF.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/pdfmake.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
+<script type='text/javascript'>
+
+function setKvarendaParams(){
+
+	Kvarenda.ownCreditRate = 0.08;
+	Kvarenda.clientAnnuityRate = 0.12;
+	Kvarenda.saleDiscount = 0.10;
+	Kvarenda.agencyCommission =  0.025;
+	Kvarenda.saleTime = 3;
+	Kvarenda.requiredIncomeRatio = 1;
+	Kvarenda.nonPaymentMonth = 3;
+
+}
+
+function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime, resultHTML=''){
+
+	resultHTML = resultHTML + "<div id='Kvarenda'><div id='error'></div><div id='pdf-block'></div><div id='params'></div><div id='customer-table'></div></div>";
+
+	resultDOM = new DOMParser().parseFromString(resultHTML, "text/html"); 
+
+	let result = Kvarenda.calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime);
+
+	if (Kvarenda.error){
+
+		let errorBlock = resultDOM.getElementById('error');
+		errorBlock.innerHTML = Kvarenda.error;
+
+	}else{
+		
+		let paramsTable = '<table>';
+		let paramsData = [];
+		paramsData.push(
+							[{text:'Стоимость квартиры', style:'tableHeader'}, result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
+							[{text:'Ежемесячный платёж', style:'tableHeader'}, result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
+							[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
+							[{text:'Начальный взнос', style:'tableHeader'}, (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})]
+						);
+
+		paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
+		paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
+		paramsTable = paramsTable + '<tr><td>Количество платежей</td><td>' + result.paymentsNumber + '</td></tr>';
+		paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
+
+		paramsTable = paramsTable + '</table>';
+
+		let paramsBlock = resultDOM.getElementById('params');
+		paramsBlock.innerHTML = paramsTable;
+
+		let customerTable ='<table><tr><th>Дата</th><th>Арендный платёж</th><th>Выкупной платёж со взносами</th><th>Итого платёж</th><th>Комиссия за досрочное погашение</th><th>Сумма выкупных платежей</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма</th><th>Возврат</th></tr>';
+
+		let tableData = [];
+		tableData.push([
+						{
+							text: 'Дата',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Арендный платёж',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Выкупной платёж со взносами',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Итого платёж',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Комиссия за досрочное погашение',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Сумма выкупных платежей',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Штраф за расторжение: % от выкупных платежей',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Штраф за расторжение: сумма',
+							style: 'tableHeader'
+						},
+						{
+							text: 'Возврат',
+							style: 'tableHeader'
+						}
+					]);
+
+		result.model.forEach(function(item, i, arr) {
+
+			if(i==0){
+				return;
+			}
+
+			customerTable = customerTable + '<tr>';
+
+			customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : ((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td>';
+
+			customerTable = customerTable + '</tr>';
+
+			tableData.push([
+				((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
+				((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})),
+				((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})),
+				((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : ((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}))
+			]);
+
+		});
+
+		customerTable = customerTable + '</table>';
+
+		let customerTableBlock = resultDOM.getElementById('customer-table');
+		customerTableBlock.innerHTML = customerTable;
+
+		let pdfBlock = resultDOM.getElementById('pdf-block');
+		pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='get PDF'>";
+		
+		let pdfBtn = resultDOM.getElementById('get-pdf');
+		pdfBtn.onclick = function() {
+
+			let header = 'Kvarenda';
+			let subheader = 'Kvarenda customer table';
+			let text = 'Customer table';
+
+			getCustomerTablePDF(header, subheader, text, paramsData, tableData);
+
+		}
+
+	}
+
+	let pdfBtn = resultDOM.getElementById('get-pdf');
+
+	let pdfBtnOnClick = pdfBtn ? pdfBtn.onclick : pdfBtn; 
+
+	return {html: resultDOM.documentElement.outerHTML, pdfBtnOnClick: pdfBtnOnClick};    
+
+}
+
+	window.onload = function(){
+
+		setKvarendaParams();
+
+		let form = document.getElementById('form240643994'); 
+		let button = form.querySelector('[type="submit"]');
+		let td_recid = '240668919';
+		let rec = $('#rec'+td_recid);
+		let customCodeHTML =  t868__readCustomCode(rec);
+
+		let propertyCostInput = form.querySelector('[name="propertyCost"]');
+		let clientMonthlyPaymentInput = form.querySelector('[name="clientMonthlyPayment"]');
+		let paymentsNumberInput = form.querySelector('[name="paymentsNumber"]');
+		let initialFeeInput = form.querySelector('[name="initialFee"]');
+		let constructionTimeInput = form.querySelector('[name="constructionTime"]');
+
+		propertyCostInput.setAttribute('type', 'number');
+		clientMonthlyPaymentInput.setAttribute('type', 'number');
+		paymentsNumberInput.setAttribute('type', 'number');
+		initialFeeInput.setAttribute('type', 'number');
+		constructionTimeInput.setAttribute('type', 'number');
+
+		form.classList.remove('js-form-proccess');
+
+		button.onclick = function(event) {
+
+			let propertyCost = propertyCostInput.value;
+			let clientMonthlyPayment = clientMonthlyPaymentInput.value;
+			let paymentsNumber = paymentsNumberInput.value;
+			let initialFee = initialFeeInput.value;
+			let constructionTime = constructionTimeInput.value;
+
+			let calcResult = calc(propertyCost != '' ? parseFloat(propertyCost): 0,
+					clientMonthlyPayment != '' ? parseFloat(clientMonthlyPayment) : 0,
+					paymentsNumber != '' ? parseFloat(paymentsNumber) : 0,
+					initialFee != '' ? parseFloat(initialFee) : 0,
+					constructionTime != '' ? parseFloat(constructionTime) : 0,
+					customCodeHTML);
+
+			let resultCode = calcResult.html; 
+
+			t868_showPopup(td_recid, resultCode);
+
+			let pdfBtn = document.getElementById('get-pdf');
+			if(pdfBtn){
+				pdfBtn.onclick = calcResult.pdfBtnOnClick;
+			}
+
+			event.preventDefault();
+
+		}
+
+	}
+
+</script>
+	<style>
+	#Kvarenda{
+	    font-family: 'Roboto',Arial,sans-serif
+	}
+	#rec240668919 .t-popup__container{
+		height: 95%;
+		overflow: hidden;
+	}
+	#Kvarenda{
+		height: 100%;
+		margin: 20px;
+	}
+	#params table tr td:nth-child(even),
+	#customer-table table td {
+        text-align: right;
+    }
+	#customer-table{
+		height: 65%;
+		width: fit-content;
+		overflow: scrol;
+		overflow-x: hidden;
+		font-size: 0.8em;
+	}
+	#form{
+		margin-bottom: 50px;
+	}
+	#pdf-block,
+	#params{
+		margin-bottom: 20px;
+	}
+	#customer-table th,
+	#customer-table td{
+		border: 1px solid black;
+	}
+	#error{
+		color: red;
+	}
+	.bold{
+		font-weight: bold;
+	}
+</style>
