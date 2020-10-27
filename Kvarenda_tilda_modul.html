@@ -4,6 +4,9 @@
 <script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
 <script type='text/javascript'>
 
+const formId = '243518517';
+const popupId = '243665900';
+
 function setKvarendaParams(){
 
 	Kvarenda.ownCreditRate = 0.08;
@@ -159,9 +162,9 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 
 		setKvarendaParams();
 
-		let form = document.getElementById('form240643994'); 
+		let form = document.getElementById('form' + formId); 
 		let button = form.querySelector('[type="submit"]');
-		let td_recid = '240668919';
+		let td_recid = popupId;
 		let rec = $('#rec'+td_recid);
 		let customCodeHTML =  t868__readCustomCode(rec);
 
@@ -214,7 +217,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 	#Kvarenda{
 	    font-family: 'Roboto',Arial,sans-serif
 	}
-	#rec240668919 .t-popup__container{
+	#rec243665900 .t-popup__container{
 		height: 95%;
 		overflow: hidden;
 	}
