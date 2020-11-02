@@ -45,10 +45,10 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 		let paramsTable = '<table>';
 		let paramsData = [];
 		paramsData.push(
-							[{text:'Стоимость квартиры', style:'tableHeader'}, numberWithSpaces(Math.round(result.propertyCost)) + ' руб'],
-							[{text:'Ежемесячный платёж', style:'tableHeader'}, numberWithSpaces(Math.round(result.clientMonthlyPayment)) + ' руб'],
+							[{text:'Стоимость квартиры', style:'tableHeader'}, numberWithSpaces(Math.round(result.propertyCost), " ") + ' руб'],
+							[{text:'Ежемесячный платёж', style:'tableHeader'}, numberWithSpaces(Math.round(result.clientMonthlyPayment), " ") + ' руб'],
 							[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
-							[{text:'Начальный взнос', style:'tableHeader'}, numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee)) + ' руб']
+							[{text:'Начальный взнос', style:'tableHeader'}, numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee), " ") + ' руб']
 						);
 
 		paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + numberWithSpaces(Math.round(result.propertyCost)) + ' руб' + '</td></tr>';
@@ -112,27 +112,27 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			customerTable = customerTable + '<tr>';
 
 			customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent).toLocaleString()) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout).toLocaleString()) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total).toLocaleString()) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax).toLocaleString()) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout).toLocaleString()) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent))) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout))) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total))) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax))) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout))) + '</td>';
 			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear).toLocaleString()) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : ((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))).toLocaleString() + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear))) + '</td>';
+			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))) + '</td>';
 
 			customerTable = customerTable + '</tr>';
 
 			tableData.push([
 				((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
-				((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent).toLocaleString()),
-				((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout).toLocaleString()),
-				((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total).toLocaleString()),
-				((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax).toLocaleString()),
-				((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout).toLocaleString()),
-				((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString()),
-				((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear).toLocaleString()),
-				((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : ((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear)).toLocaleString())
+				((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent), " ")),
+				((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout), " ")),
+				((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total), " ")),
+				((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax), " ")),
+				((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout), " ")),
+				((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})),
+				((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear), " ")),
+				((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear), " "))
 			]);
 
 		});
@@ -166,8 +166,8 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 
 }
 
-function numberWithSpaces(x) {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+function numberWithSpaces(x, symbol = "&nbsp;") {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol);
 }
 
 	window.onload = function(){
