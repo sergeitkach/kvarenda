@@ -1,4 +1,4 @@
-function getCustomerTablePDF(header='', subheader='', text='', paramsData, tableData){
+function getCustomerTablePDF(header='', subheader='', text='', paramsData, tableData, tableType='customer'){
 
 	let docDefinition = {
 		content: [
@@ -44,10 +44,28 @@ function getCustomerTablePDF(header='', subheader='', text='', paramsData, table
 				fontSize: 7,
 				color: 'black',
 				alignment: 'center'
+			},
+			tableVHeader: {
+				bold: true,
+				fontSize: 7,
+				color: 'black',
+				alignment: 'left'
+			},
+			bold:{
+				bold: true
 			}
 		}
 	}
 
-	pdfMake.createPdf(docDefinition).download('Kvarenda');
+	if (tableType=='main'){
+
+		docDefinition.pageSize = {
+			width: 2000,
+			height: 'auto'
+		}
+
+	}
+
+	pdfMake.createPdf(docDefinition).download(`Kvarenda ${tableType}`);
 
 }
