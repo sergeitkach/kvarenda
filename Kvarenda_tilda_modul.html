@@ -1,11 +1,18 @@
 <script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@3d6a76a244865bc9e4eea11c9bff9b1f5e5788a8/Kvarenda.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@3d612b396563366437aaf3450c68b286c0214fb8/KvarendaPDF.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@4be2618c487ebd4cde8577ff90fe25e84e0b4c71/KvarendaPDF.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/pdfmake.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
 <script type='text/javascript'>
 
 const formId = '244219273';
 const popupId = '244218722';
+
+const NBSP = '\u00a0';
+const blue = '#d9e2f3';
+const lightBlue = '#deebf6';
+const green = '#e2efd9';
+const red = '#fbe4d5';
+const yellow = '#fff3cb';
 
 function setKvarendaParams(){
 
@@ -19,11 +26,11 @@ function setKvarendaParams(){
 
 }
 
-function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime, resultHTML=''){
+function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime, resultHTML='', tableType='main'){
 
-	resultHTML = resultHTML + "<div id='Kvarenda'><div id='error'></div><div id='pdf-block'></div><div id='params'></div><div id='customer-table'></div></div>";
+	resultHTML = resultHTML + `<div id='Kvarenda'><div id='error'></div><div id='pdf-block'></div><div id='params'></div><div id='table' class='${tableType}'></div></div>`;
 
-	resultDOM = new DOMParser().parseFromString(resultHTML, "text/html"); 
+	resultDOM = new DOMParser().parseFromString(resultHTML, "text/html");
 
 	let result = Kvarenda.calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime);
 
@@ -32,7 +39,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 		let errorText = 'Неизвестная ошибка. Попробуйте ещё раз'
 
 		if(Kvarenda.error == 'EconomicError'){
-			errorText = 'Стоимость квартиры, размер ежемесячного платежа и срок - не согласуются между собой. Исправьте значения или введите любые два из них - третье будет рассчитано автоматически.';   
+			errorText = 'Стоимость квартиры, размер ежемесячного платежа и срок - не согласуются между собой. Исправьте значения или введите любые два из них - третье будет рассчитано автоматически.';
 		}else if(Kvarenda.error == 'RequiredParametersError'){
 			errorText = 'Стоимость квартиры, размер ежемесячного платежа и срок - необходимо задать хотя бы два из этих трёх параметров.';
 		}
@@ -41,118 +48,544 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 		errorBlock.innerHTML = errorText;
 
 	}else{
-		
-		let paramsTable = '<table>';
-		let paramsData = [];
-		paramsData.push(
-							[{text:'Стоимость квартиры', style:'tableHeader'}, numberWithSpaces(Math.round(result.propertyCost), " ") + ' руб'],
-							[{text:'Ежемесячный платёж', style:'tableHeader'}, numberWithSpaces(Math.round(result.clientMonthlyPayment), " ") + ' руб'],
-							[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
-							[{text:'Начальный взнос', style:'tableHeader'}, numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee), " ") + ' руб']
-						);
 
-		paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + numberWithSpaces(Math.round(result.propertyCost)) + ' руб' + '</td></tr>';
-		paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + numberWithSpaces(Math.round(result.clientMonthlyPayment)) + ' руб' + '</td></tr>';
-		paramsTable = paramsTable + '<tr><td>Количество платежей</td><td>' + result.paymentsNumber + '</td></tr>';
-		paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee)) + ' руб' + '</td></tr>';
+		if(tableType=='main'){
 
-		paramsTable = paramsTable + '</table>';
+			let paramsTable = '<table class="float-left">';
+			let paramsData = [];
 
-		let paramsBlock = resultDOM.getElementById('params');
-		paramsBlock.innerHTML = paramsTable;
-
-		let customerTable ='<table><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr>';
-
-		let tableData = [];
-		tableData.push([
+			paramsData.push(
+					[{text:'Стоимость квартиры', style:'tableVHeader'}, 
 						{
-							text: 'Дата',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Арендный платёж, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Выкупной платёж со взносами, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Итого платёж, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Комиссия за досрочное погашение, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Сумма выкупных платежей, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Штраф за расторжение: % от выкупных платежей',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Штраф за расторжение: сумма, руб.',
-							style: 'tableHeader'
-						},
-						{
-							text: 'Возврат, руб.',
-							style: 'tableHeader'
+							text: numberWithSpaces(Math.round(result.propertyCost), NBSP) + ' руб',
+							style: 'bold'
 						}
-					]);
+					],
+					[{text:'Наш кредит - ставка', style:'tableVHeader'}, result.ownCreditRate.toLocaleString('ru-RU', {style: 'percent'})],
+					[{text:'Ставка, аннуит, год', style:'tableVHeader'}, result.clientAnnuityRate.toLocaleString('ru-RU', {style: 'percent'})],
+					[{text:'Платёж нам в месяц', style:'tableVHeader'}, 
+						{
+							text: numberWithSpaces(Math.round(result.clientMonthlyPayment), NBSP) + ' руб',
+							style: 'bold'
+						}
+					],
+					[{text:'Срок строительства, мес', style:'tableVHeader'}, result.constructionTime],
+					[{text:'Гарантийный взнос, мес', style:'tableVHeader'}, result.guaranteeFeeMonth],
+					[{text:'Первоначальный взнос, мес', style:'tableVHeader'}, result.initialFeeMonth],
+					[{text:'Срок, месяцев', style:'tableVHeader'}, result.creditTerm],
+					[{text:'Количество платежей', style:'tableVHeader'}, 
+						{
+							text: result.paymentsNumber,
+							style: 'bold'
+						}
+					],
+					[{text:'Ставка клиента, мес', style:'tableVHeader'}, result.clientRate.toLocaleString('ru-RU', {style: 'percent'})],
+					[{text:'Аннуитетный платёж', style:'tableVHeader'}, numberWithSpaces(Math.round(result.annuityPayment), NBSP) + ' руб'],
+					[{text:'Гарантийный взнос, руб', style:'tableVHeader'}, 
+						{
+							text: numberWithSpaces(Math.round(result.guaranteeFee), NBSP) + ' руб',
+							style: 'bold'
+						}
+					],
+					[{text:'Арендный платёж в мес', style:'tableVHeader'}, numberWithSpaces(Math.round(result.rentPayment), NBSP) + ' руб'],
+					[{text:'Первонач взнос, руб', style:'tableVHeader'}, 
+						{
+							text: numberWithSpaces(Math.round(result.initialFee), NBSP) + ' руб',
+							style: 'bold'
+						}
+					],
+					[{text:'Аннуитет со взносом', style:'tableVHeader'}, numberWithSpaces(Math.round(result.annuityWithFee), NBSP) + ' руб'],
+					[{text:'Дисконт на продажу квартиры', style:'tableVHeader'}, result.saleDiscount.toLocaleString('ru-RU', {style: 'percent'})],
+					[{text:'Комиссия агентства', style:'tableVHeader'}, result.agencyCommission.toLocaleString('ru-RU', {style: 'percent'})],
+					[{text:'Итого потеря, руб', style:'tableVHeader'}, numberWithSpaces(Math.round(result.totalLost), NBSP) + ' руб'],
+					[{text:'Срок продажи квартиры, мес', style:'tableVHeader'}, result.saleTime],
+					[{text:'Коэффициент необходимого дохода', style:'tableVHeader'}, result.requiredIncomeRatio],
+					[{text:'Количество неплатежей, мес', style:'tableVHeader'}, result.nonPaymentMonth]
+			);
 
-		result.model.forEach(function(item, i, arr) {
+			paramsTable = paramsTable + '<tr><td class="bold">Стоимость квартиры</td><td class="bold">' + numberWithSpaces(Math.round(result.propertyCost)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Наш кредит - ставка</td><td>' + result.ownCreditRate.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Ставка, аннуит, год</td><td>' + result.clientAnnuityRate.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td class="bold">Платёж нам в месяц</td><td class="bold">' + numberWithSpaces(Math.round(result.clientMonthlyPayment), " ") + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Срок строительства, мес</td><td>' + result.constructionTime + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Гарантийный взнос, мес</td><td>' + result.guaranteeFeeMonth + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Первоначальный взнос, мес</td><td>' + result.initialFeeMonth + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Срок, месяцев</td><td>' + result.creditTerm + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td class="bold">Кол-во платежей</td><td class="bold">' + result.paymentsNumber + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Ставка клиента, мес</td><td>' + result.clientRate.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Аннуитетный платёж</td><td>' + numberWithSpaces(Math.round(result.annuityPayment)) + ' руб' + '</td></tr>';
 
-			if(i==0){
-				return;
-			}
+			paramsTable = paramsTable + '</table><table class="float-right">';
 
-			customerTable = customerTable + '<tr>';
+			paramsTable = paramsTable + '<tr><td class="bold">Гарантийный взнос, руб</td><td class="bold">' + numberWithSpaces(Math.round(result.guaranteeFee)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Арендный платёж в мес</td><td>' + numberWithSpaces(Math.round(result.rentPayment)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td class="bold">Первонач взнос, руб</td><td class="bold">' + numberWithSpaces(Math.round(result.initialFee)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Аннуитет со взносом</td><td>' + numberWithSpaces(Math.round(result.annuityWithFee)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Дисконт на продажу квартиры</td><td>' + result.saleDiscount.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Комиссия агентства</td><td>' + result.agencyCommission.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Итого потеря, руб</td><td>' + numberWithSpaces(Math.round(result.totalLost)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Срок продажи квартиры, мес</td><td>' + result.saleTime + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Коэффициент необходимого дохода</td><td>' + result.requiredIncomeRatio + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Количество неплатежей, мес</td><td>' + result.nonPaymentMonth + '</td></tr>';
 
-			customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear))) + '</td>';
-			customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))) + '</td>';
+			paramsTable = paramsTable + '</table>';
 
-			customerTable = customerTable + '</tr>';
+			let paramsBlock = resultDOM.getElementById('params');
+			paramsBlock.innerHTML = paramsTable;
+
+			let modelTable ='<table><tr><th></th><th class="blue">Аннуитет: Задолженность, руб</th><th class="blue">Аннуитет: Проценты, руб</th><th class="blue">Аннуитет: Тело, руб</th><th class="blue">Аннуитет: Платёж, руб</th><th class="green">Дифф: Задолженность, руб</th><th class="green">Дифф: Проценты, руб</th><th class="green">Дифф: Тело, руб</th><th class="green">Дифф: Платёж, руб</th><th class="red">Плат: Задолженность, руб</th><th class="red">Плат: Аренда, руб</th><th class="red">Плат: Выкуп, руб</th><th class="red">Плат: Итого, руб</th><th class="yellow">Досрочность: Наш доход, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность:  Среднемес, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность: Выхлоп, руб</th><th class="yellow">Досрочность: Выкуп S, руб</th><th class="yellow">Досрочность: Штраф calc, руб</th><th class="yellow">Досрочность: Штраф макс, руб</th><th class="yellow">Досрочность: Макс год, руб</th><th class="yellow">Досрочность: Доход, руб</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Среднемес, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Мы заплатили, руб</th><th class="light-blue">Соскок: Мы получили, руб</th><th class="light-blue">Соскок: Выхлоп, руб</th><th class="light-blue">Соскок: Нужен доход, руб</th><th class="light-blue">Соскок: Излишек, руб</th><th class="light-blue">Соскок: S выкуп платежей, руб</th><th class="light-blue">Соскок: Возврат, руб</th><th class="light-blue">Соскок: Штраф, руб</th><th class="light-blue">Соскок: Штраф макс, руб</th><th class="light-blue">Соскок: Штраф <= выкуп, руб</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс, руб</th><th class="light-blue">Соскок: Итого, доход, руб</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr>';
+
+			let tableData = [];
 
 			tableData.push([
-				((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
-				((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent), " ")),
-				((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout), " ")),
-				((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total), " ")),
-				((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax), " ")),
-				((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout), " ")),
-				((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents).toLocaleString('ru-RU', {style: 'percent'})),
-				((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear), " ")),
-				((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear), " "))
-			]);
+							{
+								text: 'Дата',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Аннуитет: Задолженность',
+								style: 'tableHeader',
+								fillColor: blue
+							},
+							{
+								text: 'Аннуитет: Проценты',
+								style: 'tableHeader',
+								fillColor: blue
+							},
+							{
+								text: 'Аннуитет: Тело',
+								style: 'tableHeader',
+								fillColor: blue
+							},
+							{
+								text: 'Аннуитет: Платёж',
+								style: 'tableHeader',
+								fillColor: blue
+							},
+							{
+								text: 'Дифф: Задолженность',
+								style: 'tableHeader',
+								fillColor: green
+							},
+							{
+								text: 'Дифф: Проценты',
+								style: 'tableHeader',
+								fillColor: green
+							},
+							{
+								text: 'Дифф: Тело',
+								style: 'tableHeader',
+								fillColor: green
+							},
+							{
+								text: 'Дифф: Платёж',
+								style: 'tableHeader',
+								fillColor: green
+							},
+							{
+								text: 'Плат: Задолженность',
+								style: 'tableHeader',
+								fillColor: red
+							},
+							{
+								text: 'Плат: Аренда',
+								style: 'tableHeader',
+								fillColor: red
+							},
+							{
+								text: 'Плат: Выкуп',
+								style: 'tableHeader',
+								fillColor: red
+							},
+							{
+								text: 'Плат: Итого',
+								style: 'tableHeader',
+								fillColor: red
+							},
+							{
+								text: 'Досрочность: Наш доход',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Нарастающ',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность:  Среднемес',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Нарастающ',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Выхлоп',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Досрочность: Выкуп S',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Штраф calc',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Штраф макс',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Макс год',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: Доход',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Досрочность: К норме',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{
+								text: 'Соскок: Наш доход',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Нарастающ',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Среднемес',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Нарастающ',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Мы заплатили',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Мы получили',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Выхлоп',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Нужен доход',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Излишек',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: S выкуп платежей',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Возврат',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф макс',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф <= выкуп',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф % выкуп',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф max %',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Штраф год макс',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Итого, доход',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{
+								text: 'Соскок: Итого, доход',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							}
+						]);
 
-		});
+			result.model.forEach(function(item, i, arr) {
+				modelTable = modelTable + '<tr>';
 
-		customerTable = customerTable + '</table>';
+				modelTable = modelTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.annuity_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_debt))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.annuity_percents) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_percents))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.annuity_body) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_body))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.annuity_pmt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_pmt))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.diff_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_debt))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.diff_percents) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_percents))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.diff_body) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_body))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.diff_pmt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_pmt))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.pmt_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_debt))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total))) + '</td>';
 
-		let customerTableBlock = resultDOM.getElementById('customer-table');
-		customerTableBlock.innerHTML = customerTable;
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_profit) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_profit))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_profitGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_profitGrow))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_average) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_average))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_averageGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_averageGrow))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_waste) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_waste))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_buyout))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_fine) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_fine))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_fineMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_fineMax))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_income) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_income))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.earlyFee_norm) === 'undefined') ? '' : item.earlyFee_norm.toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
 
-		let pdfBlock = resultDOM.getElementById('pdf-block');
-		pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='скачать в PDF'>";
-		
-		let pdfBtn = resultDOM.getElementById('get-pdf');
-		pdfBtn.onclick = function() {
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_profit) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_profit))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_profitGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_profitGrow))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_average) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_average))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_averageGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_averageGrow))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_paid) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_paid))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_received) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_received))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_waste) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_waste))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_need) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_need))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_over) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_over))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_return) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_return))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fine) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fine))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMax))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineBuyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineBuyout))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineBuyoutPercents) === 'undefined') ? '' : item.breakdown_fineBuyoutPercents.toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : item.breakdown_fineMaxPercents.toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_totalIncome) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_totalIncome))) + '</td>';
+				modelTable = modelTable + '<td>' + ((typeof(item.breakdown_totalIncomePercents) === 'undefined') ? '' : item.breakdown_totalIncomePercents.toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
 
-			let header = 'Kvarenda';
-			let subheader = 'Kvarenda customer table';
-			let text = 'Customer table';
+				modelTable = modelTable + '</tr>';
 
-			getCustomerTablePDF(header, subheader, text, paramsData, tableData);
+				tableData.push([
+					((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
+					((typeof(item.annuity_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_debt), NBSP)),
+					((typeof(item.annuity_percents) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_percents), NBSP)),
+					((typeof(item.annuity_body) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_body), NBSP)),
+					((typeof(item.annuity_pmt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_pmt), NBSP)),
+					((typeof(item.diff_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_debt), NBSP)),
+					((typeof(item.diff_percents) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_percents), NBSP)),
+					((typeof(item.diff_body) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_body), NBSP)),
+					((typeof(item.diff_pmt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.diff_pmt), NBSP)),
+					((typeof(item.pmt_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_debt), NBSP)),
+					((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent), NBSP)),
+					((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout), NBSP)),
+					((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total), NBSP)),
+					((typeof(item.earlyFee_profit) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_profit), NBSP)),
+					((typeof(item.earlyFee_profitGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_profitGrow), NBSP)),
+					((typeof(item.earlyFee_average) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_average), NBSP)),
+					((typeof(item.earlyFee_averageGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_averageGrow), NBSP)),
+					((typeof(item.earlyFee_waste) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_waste), NBSP)),
+					((typeof(item.earlyFee_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_buyout), NBSP)),
+					((typeof(item.earlyFee_fine) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_fine), NBSP)),
+					((typeof(item.earlyFee_fineMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_fineMax), NBSP)),
+					((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax), NBSP)),
+					((typeof(item.earlyFee_income) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_income), NBSP)),
+					((typeof(item.earlyFee_norm) === 'undefined') ? '' : item.earlyFee_norm.toLocaleString('ru-RU', {style: 'percent'})),
+					((typeof(item.breakdown_profit) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_profit), NBSP)),
+					((typeof(item.breakdown_profitGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_profitGrow), NBSP)),
+					((typeof(item.breakdown_average) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_average), NBSP)),
+					((typeof(item.breakdown_averageGrow) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_averageGrow), NBSP)),
+					((typeof(item.breakdown_paid) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_paid), NBSP)),
+					((typeof(item.breakdown_received) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_received), NBSP)),
+					((typeof(item.breakdown_waste) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_waste), NBSP)),
+					((typeof(item.breakdown_need) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_need), NBSP)),
+					((typeof(item.breakdown_over) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_over), NBSP)),
+					((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout), NBSP)),
+					((typeof(item.breakdown_return) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_return), NBSP)),
+					((typeof(item.breakdown_fine) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fine), NBSP)),
+					((typeof(item.breakdown_fineMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMax), NBSP)),
+					((typeof(item.breakdown_fineBuyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineBuyout), NBSP)),
+					((typeof(item.breakdown_fineBuyoutPercents) === 'undefined') ? '' : item.breakdown_fineBuyoutPercents.toLocaleString('ru-RU', {style: 'percent'})),
+					((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : item.breakdown_fineMaxPercents.toLocaleString('ru-RU', {style: 'percent'})),
+					((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear), NBSP)),
+					((typeof(item.breakdown_totalIncome) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_totalIncome), NBSP)),
+					((typeof(item.breakdown_totalIncomePercents) === 'undefined') ? '' : item.breakdown_totalIncomePercents.toLocaleString('ru-RU', {style: 'percent'}))
+				]);
+
+			});
+			modelTable = modelTable + '</table>';
+
+			let modelBlock = resultDOM.getElementById('table');
+			modelBlock.innerHTML = modelTable;
+
+			let pdfBlock = resultDOM.getElementById('pdf-block');
+			pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='скачать в PDF'>";
+
+			let pdfBtn = resultDOM.getElementById('get-pdf');
+			pdfBtn.onclick = function() {
+
+				let header = 'Kvarenda';
+				let subheader = 'Kvarenda main table';
+				let text = 'Main table';
+
+				getCustomerTablePDF(header, subheader, text, paramsData, tableData, 'main');
+
+			}
+
+		}else{
+
+			let paramsTable = '<table>';
+			let paramsData = [];
+			paramsData.push(
+								[{text:'Стоимость квартиры', style:'tableVHeader'}, numberWithSpaces(Math.round(result.propertyCost), NBSP) + ' руб'],
+								[{text:'Ежемесячный платёж', style:'tableVHeader'}, numberWithSpaces(Math.round(result.clientMonthlyPayment), NBSP) + ' руб'],
+								[{text:'Количество платежей', style:'tableVHeader'}, result.paymentsNumber],
+								[{text:'Начальный взнос', style:'tableVHeader'}, numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee), NBSP) + ' руб']
+							);
+
+			paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + numberWithSpaces(Math.round(result.propertyCost)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Ежемесячный платёж</td><td>' + numberWithSpaces(Math.round(result.clientMonthlyPayment)) + ' руб' + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Количество платежей</td><td>' + result.paymentsNumber + '</td></tr>';
+			paramsTable = paramsTable + '<tr><td>Начальный взнос</td><td>' + numberWithSpaces(Math.round(result.guaranteeFee + result.initialFee)) + ' руб' + '</td></tr>';
+
+			paramsTable = paramsTable + '</table>';
+
+			let paramsBlock = resultDOM.getElementById('params');
+			paramsBlock.innerHTML = paramsTable;
+
+			let customerTable ='<table><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr>';
+
+			let tableData = [];
+			tableData.push([
+							{
+								text: 'Дата',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Арендный платёж, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Выкупной платёж со взносами, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Итого платёж, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Комиссия за досрочное погашение, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Сумма выкупных платежей, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Штраф за расторжение: % от выкупных платежей',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Штраф за расторжение: сумма, руб.',
+								style: 'tableHeader'
+							},
+							{
+								text: 'Возврат, руб.',
+								style: 'tableHeader'
+							}
+						]);
+
+			result.model.forEach(function(item, i, arr) {
+
+				if(i==0){
+					return;
+				}
+
+				customerTable = customerTable + '<tr>';
+
+				customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : item.breakdown_fineMaxPercents.toLocaleString('ru-RU', {style: 'percent'})) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear))) + '</td>';
+				customerTable = customerTable + '<td>' + ((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear))) + '</td>';
+
+				customerTable = customerTable + '</tr>';
+
+				tableData.push([
+					((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
+					((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent), NBSP)),
+					((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout), NBSP)),
+					((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total), NBSP)),
+					((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : numberWithSpaces(Math.round(item.earlyFee_yearMax), NBSP)),
+					((typeof(item.breakdown_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_buyout), NBSP)),
+					((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : item.breakdown_fineMaxPercents.toLocaleString('ru-RU', {style: 'percent'})),
+					((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces(Math.round(item.breakdown_fineMaxYear), NBSP)),
+					((typeof(item.breakdown_buyout) === 'undefined' || typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : numberWithSpaces((item.breakdown_fineMaxYear === 0) ? 0 : Math.round(item.breakdown_buyout - item.breakdown_fineMaxYear), NBSP))
+				]);
+
+			});
+
+			customerTable = customerTable + '</table>';
+
+			let customerTableBlock = resultDOM.getElementById('table');
+			customerTableBlock.innerHTML = customerTable;
+
+			let pdfBlock = resultDOM.getElementById('pdf-block');
+			pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='скачать в PDF'>";
+
+			let pdfBtn = resultDOM.getElementById('get-pdf');
+			pdfBtn.onclick = function() {
+
+				let header = 'Kvarenda';
+				let subheader = 'Kvarenda customer table';
+				let text = 'Customer table';
+
+				getCustomerTablePDF(header, subheader, text, paramsData, tableData);
+
+			}
 
 		}
 
@@ -162,7 +595,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 
 	let pdfBtnOnClick = pdfBtn ? pdfBtn.onclick : pdfBtn; 
 
-	return {html: resultDOM.documentElement.outerHTML, pdfBtnOnClick: pdfBtnOnClick};    
+	return {html: resultDOM.documentElement.outerHTML, pdfBtnOnClick: pdfBtnOnClick};
 
 }
 
@@ -185,6 +618,7 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 		let paymentsNumberInput = form.querySelector('[name="paymentsNumber"]');
 		let initialFeeInput = form.querySelector('[name="initialFee"]');
 		let constructionTimeInput = form.querySelector('[name="constructionTime"]');
+		let tableTypeInput = form.querySelector('[name="tableType"]');
 
 		propertyCostInput.setAttribute('type', 'number');
 		clientMonthlyPaymentInput.setAttribute('type', 'number');
@@ -201,13 +635,15 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 			let paymentsNumber = paymentsNumberInput.value;
 			let initialFee = initialFeeInput.value;
 			let constructionTime = constructionTimeInput.value;
+			let tableType = tableTypeInput.value;
 
 			let calcResult = calc(propertyCost != '' ? parseFloat(propertyCost): 0,
 					clientMonthlyPayment != '' ? parseFloat(clientMonthlyPayment) : 0,
 					paymentsNumber != '' ? parseFloat(paymentsNumber) : 0,
 					initialFee != '' ? parseFloat(initialFee) : 0,
 					constructionTime != '' ? parseFloat(constructionTime) : 0,
-					customCodeHTML);
+					customCodeHTML,
+					tableType);
 
 			let resultCode = calcResult.html; 
 
@@ -226,26 +662,24 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 
 </script>
 <style>
-	#Kvarenda{
-	    font-family: 'Roboto',Arial,sans-serif
-	}
 	#rec244218722 .t-popup__container{
 		height: 95%;
 		overflow: hidden;
 	}
 	#Kvarenda{
+		font-family: 'Roboto',Arial,sans-serif;
 		height: 100%;
 		margin: 20px;
 	}
 	#params table tr td:nth-child(even),
-	#customer-table table td {
+	#table table td{
 		text-align: right;
 	}
-	#customer-table{
+	#table{
 		height: 65%;
-		width: fit-content;
-		overflow: scrol;
-		overflow-x: hidden;
+		width: 100%;
+        overflow-y: auto;
+        overflow-x: auto;
 		font-size: 0.8em;
 	}
 	#form{
@@ -255,14 +689,38 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	#params{
 		margin-bottom: 20px;
 	}
-	#customer-table th,
-	#customer-table td{
+	#table th,
+	#table td{
 		border: 1px solid black;
+	}
+	#table.main{
+		height: 50%;
 	}
 	#error{
 		color: red;
 	}
 	.bold{
 		font-weight: bold;
+	}
+	.float-left{
+	    float: left;
+	}
+	.float-right{
+		float: right;
+	}
+	.blue{
+		background-color: rgb(217, 226, 243);
+	}
+	.light-blue{
+		background-color: rgb(222, 235, 246);
+	}
+	.green{
+		background-color: rgb(226, 239, 217);
+	}
+	.red{
+		background-color: rgb(251, 228, 213);
+	}
+	.yellow{
+		background-color: rgb(255, 243, 203);
 	}
 </style>

@@ -4,8 +4,27 @@
 		<meta charset='utf-8' />
 		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 
+		<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/pdfmake.min.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
+
 		<script src='Kvarenda.js'></script>
+		<script src='KvarendaPDF.js'></script>
 		<script type='text/javascript'>
+
+			function initPdfBtn(paramsData, tableData){
+
+				let pdfBtn = document.getElementById('get-pdf');
+				pdfBtn.onclick = function() {
+
+					let header = 'Kvarenda';
+					let subheader = 'Kvarenda main table';
+					let text = 'Main table';
+
+					getCustomerTablePDF(header, subheader, text, paramsData, tableData, 'main');
+
+				}
+
+			}
 
 			function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime){
 
@@ -19,6 +38,55 @@
 				}else{
 
 					let paramsTable = '<table>';
+					let paramsData = [];
+					paramsData.push(
+										[{text:'Стоимость квартиры', style:'tableVHeader'}, 
+											{
+												text: result.propertyCost,
+												style: 'bold'
+											}
+										],
+										[{text:'Наш кредит - ставка', style:'tableVHeader'}, result.ownCreditRate],
+										[{text:'Ставка, аннуит, год', style:'tableVHeader'}, result.clientAnnuityRate],
+										[{text:'Платёж нам в месяц', style:'tableVHeader'}, 
+											{
+												text: result.clientMonthlyPayment,
+												style: 'bold'
+											}
+										],
+										[{text:'Срок строительства, мес', style:'tableVHeader'}, result.constructionTime],
+										[{text:'Гарантийный взнос, мес', style:'tableVHeader'}, result.guaranteeFeeMonth],
+										[{text:'Первоначальный взнос, мес', style:'tableVHeader'}, result.initialFeeMonth],
+										[{text:'Срок, месяцев', style:'tableVHeader'}, result.creditTerm],
+										[{text:'Количество платежей', style:'tableVHeader'}, 
+											{
+												text: result.paymentsNumber,
+												style: 'bold'
+											}
+										],
+										[{text:'Ставка клиента, мес', style:'tableVHeader'}, result.clientRate],
+										[{text:'Аннуитетный платёж', style:'tableVHeader'}, result.annuityPayment],
+										[{text:'Гарантийный взнос, руб', style:'tableVHeader'}, 
+											{
+												text: result.guaranteeFee,
+												style: 'bold'
+											}
+										],
+										[{text:'Арендный платёж в мес', style:'tableVHeader'}, result.rentPayment],
+										[{text:'Первонач взнос, руб', style:'tableVHeader'}, 
+											{
+												text: result.initialFee,
+												style: 'bold'
+											}
+										],										
+										[{text:'Аннуитет со взносом', style:'tableVHeader'}, result.annuityWithFee],
+										[{text:'Дисконт на продажу квартиры', style:'tableVHeader'}, result.saleDiscount],
+										[{text:'Комиссия агентства', style:'tableVHeader'}, result.agencyCommission],
+										[{text:'Итого потеря, руб', style:'tableVHeader'}, result.totalLost],
+										[{text:'Срок продажи квартиры, мес', style:'tableVHeader'}, result.saleTime],
+										[{text:'Коэффициент необходимого дохода', style:'tableVHeader'}, result.requiredIncomeRatio],
+										[{text:'Количество неплатежей, мес', style:'tableVHeader'}, result.nonPaymentMonth]
+					);
 
 					paramsTable = paramsTable + '<tr><td class="bold">Стоимость квартиры</td><td class="bold">' + result.propertyCost + '</td></tr>';
 					paramsTable = paramsTable + '<tr><td>Наш кредит - ставка</td><td>' + result.ownCreditRate + '</td></tr>';
@@ -47,8 +115,226 @@
 					let paramsBlock = document.getElementById('params');
 					paramsBlock.innerHTML = paramsTable;
 
-					let modelTable ='<table><tr><th></th><th class="blue">Аннуитет: Задолженность</th><th class="blue">Аннуитет: Проценты</th><th class="blue">Аннуитет: Тело</th><th class="blue">Аннуитет: Платёж</th><th class="green">Дифф: Задолженность</th><th class="green">Дифф: Проценты</th><th class="green">Дифф: Тело</th><th class="green">Дифф: Платёж</th><th class="red">Плат: Задолженность</th><th class="red">Плат: Аренда</th><th class="red">Плат: Выкуп</th><th class="red">Плат: Итого</th><th class="yellow">Досрочность: Наш доход</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность:  Среднемес</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность: Выхлоп</th><th class="yellow">Досрочность: Выкуп S</th><th class="yellow">Досрочность: Штраф calc</th><th class="yellow">Досрочность: Штраф макс</th><th class="yellow">Досрочность: Макс год</th><th class="yellow">Досрочность: Доход</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Среднемес</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Мы заплатили</th><th class="light-blue">Соскок: Мы получили</th><th class="light-blue">Соскок: Выхлоп</th><th class="light-blue">Соскок: Нужен доход</th><th class="light-blue">Соскок: Излишек</th><th class="light-blue">Соскок: S выкуп платежей</th><th class="light-blue">Соскок: Возврат</th><th class="light-blue">Соскок: Штраф</th><th class="light-blue">Соскок: Штраф макс</th><th class="light-blue">Соскок: Штраф <= выкуп</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr>';
-					
+					let modelTable ='<table><tr><th></th><th class="blue">Аннуитет: Задолженность</th><th class="blue">Аннуитет: Проценты</th><th class="blue">Аннуитет: Тело</th><th class="blue">Аннуитет: Платёж</th><th class="green">Дифф: Задолженность</th><th class="green">Дифф: Проценты</th><th class="green">Дифф: Тело</th><th class="green">Дифф: Платёж</th><th class="red">Плат: Задолженность</th><th class="red">Плат: Аренда</th><th class="red">Плат: Выкуп</th><th class="red">Плат: Итого</th><th class="yellow">Досрочность: Наш доход</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность:  Среднемес</th><th class="yellow">Досрочность: Нарастающ</th><th class="yellow">Досрочность: Выхлоп</th><th class="yellow">Досрочность: Выкуп S</th><th class="yellow">Досрочность: Штраф calc</th><th class="yellow">Досрочность: Штраф макс</th><th class="yellow">Досрочность: Макс год</th><th class="yellow">Досрочность: Доход</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Среднемес</th><th class="light-blue">Соскок: Нарастающ</th><th class="light-blue">Соскок: Мы заплатили</th><th class="light-blue">Соскок: Мы получили</th><th class="light-blue">Соскок: Выхлоп</th><th class="light-blue">Соскок: Нужен доход</th><th class="light-blue">Соскок: Излишек</th><th class="light-blue">Соскок: S выкуп платежей</th><th class="light-blue">Соскок: Возврат</th><th class="light-blue">Соскок: Штраф</th><th class="light-blue">Соскок: Штраф макс</th><th class="light-blue">Соскок: Штраф <= выкуп</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue">Соскок: Итого, доход</th></tr>';
+
+					let tableData = [];
+					tableData.push([
+									{
+										text: 'Дата',
+										style: 'tableHeader'
+									},
+									{
+										text: 'Аннуитет: Задолженность',
+										style: 'tableHeader',
+										fillColor: '#d9e2f3'
+									},
+									{
+										text: 'Аннуитет: Проценты',
+										style: 'tableHeader',
+										fillColor: '#d9e2f3'
+									},
+									{
+										text: 'Аннуитет: Тело',
+										style: 'tableHeader',
+										fillColor: '#d9e2f3'
+									},
+									{
+										text: 'Аннуитет: Платёж',
+										style: 'tableHeader',
+										fillColor: '#d9e2f3'
+									},
+									{
+										text: 'Дифф: Задолженность',
+										style: 'tableHeader',
+										fillColor: '#e2efd9'
+									},
+									{
+										text: 'Дифф: Проценты',
+										style: 'tableHeader',
+										fillColor: '#e2efd9'
+									},
+									{
+										text: 'Дифф: Тело',
+										style: 'tableHeader',
+										fillColor: '#e2efd9'
+									},
+									{
+										text: 'Дифф: Платёж',
+										style: 'tableHeader',
+										fillColor: '#e2efd9'
+									},
+									{
+										text: 'Плат: Задолженность',
+										style: 'tableHeader',
+										fillColor: '#fbe4d5'
+									},
+									{
+										text: 'Плат: Аренда',
+										style: 'tableHeader',
+										fillColor: '#fbe4d5'
+									},
+									{
+										text: 'Плат: Выкуп',
+										style: 'tableHeader',
+										fillColor: '#fbe4d5'
+									},
+									{
+										text: 'Плат: Итого',
+										style: 'tableHeader',
+										fillColor: '#fbe4d5'
+									},
+									{
+										text: 'Досрочность: Наш доход',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Нарастающ',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность:  Среднемес',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Нарастающ',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Выхлоп',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Досрочность: Выкуп S',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Штраф calc',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Штраф макс',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Макс год',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: Доход',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Досрочность: К норме',
+										style: 'tableHeader',
+										fillColor: '#fff3cb'
+									},
+									{
+										text: 'Соскок: Наш доход',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Нарастающ',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Среднемес',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Нарастающ',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Мы заплатили',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Мы получили',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Выхлоп',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Нужен доход',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Излишек',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: S выкуп платежей',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Возврат',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф макс',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф <= выкуп',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф % выкуп',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф max %',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Штраф год макс',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Итого, доход',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									},
+									{
+										text: 'Соскок: Итого, доход',
+										style: 'tableHeader',
+										fillColor: '#deebf6'
+									}
+								]);
+
 					result.model.forEach(function(item, i, arr) {
 						modelTable = modelTable + '<tr>';
 
@@ -99,11 +385,63 @@
 						modelTable = modelTable + '<td>' + ((typeof(item.breakdown_totalIncomePercents) === 'undefined') ? '' : Math.round(item.breakdown_totalIncomePercents*100)+'%') + '</td>';
 
 						modelTable = modelTable + '</tr>';
+
+						tableData.push([
+							((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})),
+							((typeof(item.annuity_debt) === 'undefined') ? '' : Math.round(item.annuity_debt)),
+							((typeof(item.annuity_percents) === 'undefined') ? '' : Math.round(item.annuity_percents)),
+							((typeof(item.annuity_body) === 'undefined') ? '' : Math.round(item.annuity_body)),
+							((typeof(item.annuity_pmt) === 'undefined') ? '' : Math.round(item.annuity_pmt)),
+							((typeof(item.diff_debt) === 'undefined') ? '' : Math.round(item.diff_debt)),
+							((typeof(item.diff_percents) === 'undefined') ? '' : Math.round(item.diff_percents)),
+							((typeof(item.diff_body) === 'undefined') ? '' : Math.round(item.diff_body)),
+							((typeof(item.diff_pmt) === 'undefined') ? '' : Math.round(item.diff_pmt)),
+							((typeof(item.pmt_debt) === 'undefined') ? '' : Math.round(item.pmt_debt)),
+							((typeof(item.pmt_rent) === 'undefined') ? '' : Math.round(item.pmt_rent)),
+							((typeof(item.pmt_buyout) === 'undefined') ? '' : Math.round(item.pmt_buyout)),
+							((typeof(item.pmt_total) === 'undefined') ? '' : Math.round(item.pmt_total)),
+							((typeof(item.earlyFee_profit) === 'undefined') ? '' : Math.round(item.earlyFee_profit)),
+							((typeof(item.earlyFee_profitGrow) === 'undefined') ? '' : Math.round(item.earlyFee_profitGrow)),
+							((typeof(item.earlyFee_average) === 'undefined') ? '' : Math.round(item.earlyFee_average)),
+							((typeof(item.earlyFee_averageGrow) === 'undefined') ? '' : Math.round(item.earlyFee_averageGrow)),
+							((typeof(item.earlyFee_waste) === 'undefined') ? '' : Math.round(item.earlyFee_waste)),
+							((typeof(item.earlyFee_buyout) === 'undefined') ? '' : Math.round(item.earlyFee_buyout)),
+							((typeof(item.earlyFee_fine) === 'undefined') ? '' : Math.round(item.earlyFee_fine)),
+							((typeof(item.earlyFee_fineMax) === 'undefined') ? '' : Math.round(item.earlyFee_fineMax)),
+							((typeof(item.earlyFee_yearMax) === 'undefined') ? '' : Math.round(item.earlyFee_yearMax)),
+							((typeof(item.earlyFee_income) === 'undefined') ? '' : Math.round(item.earlyFee_income)),
+							((typeof(item.earlyFee_norm) === 'undefined') ? '' : Math.round(item.earlyFee_norm*100)+'%'),
+							((typeof(item.breakdown_profit) === 'undefined') ? '' : Math.round(item.breakdown_profit)),
+							((typeof(item.breakdown_profitGrow) === 'undefined') ? '' : Math.round(item.breakdown_profitGrow)),
+							((typeof(item.breakdown_average) === 'undefined') ? '' : Math.round(item.breakdown_average)),
+							((typeof(item.breakdown_averageGrow) === 'undefined') ? '' : Math.round(item.breakdown_averageGrow)),
+							((typeof(item.breakdown_paid) === 'undefined') ? '' : Math.round(item.breakdown_paid)),
+							((typeof(item.breakdown_received) === 'undefined') ? '' : Math.round(item.breakdown_received)),
+							((typeof(item.breakdown_waste) === 'undefined') ? '' : Math.round(item.breakdown_waste)),
+							((typeof(item.breakdown_need) === 'undefined') ? '' : Math.round(item.breakdown_need)),
+							((typeof(item.breakdown_over) === 'undefined') ? '' : Math.round(item.breakdown_over)),
+							((typeof(item.breakdown_buyout) === 'undefined') ? '' : Math.round(item.breakdown_buyout)),
+							((typeof(item.breakdown_return) === 'undefined') ? '' : Math.round(item.breakdown_return)),
+							((typeof(item.breakdown_fine) === 'undefined') ? '' : Math.round(item.breakdown_fine)),
+							((typeof(item.breakdown_fineMax) === 'undefined') ? '' : Math.round(item.breakdown_fineMax)),
+							((typeof(item.breakdown_fineBuyout) === 'undefined') ? '' : Math.round(item.breakdown_fineBuyout)),
+							((typeof(item.breakdown_fineBuyoutPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineBuyoutPercents*100)+'%'),
+							((typeof(item.breakdown_fineMaxPercents) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxPercents*100)+'%'),
+							((typeof(item.breakdown_fineMaxYear) === 'undefined') ? '' : Math.round(item.breakdown_fineMaxYear)),
+							((typeof(item.breakdown_totalIncome) === 'undefined') ? '' : Math.round(item.breakdown_totalIncome)),
+							((typeof(item.breakdown_totalIncomePercents) === 'undefined') ? '' : Math.round(item.breakdown_totalIncomePercents*100)+'%')
+						]);
+
 					});
 					modelTable = modelTable + '</table>';
 
 					let modelBlock = document.getElementById('model');
 					modelBlock.innerHTML = modelTable;
+
+					let pdfBlock = document.getElementById('pdf-block');
+					pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='get PDF'>";
+					initPdfBtn(paramsData, tableData);
+
 				}
 
 			}
@@ -115,6 +453,8 @@
 
 					let errorBlock = document.getElementById('error');
 					errorBlock.innerHTML = '';
+					let pdfBlock = document.getElementById('pdf-block');
+					pdfBlock.innerHTML = '';
 					let paramsBlock = document.getElementById('params');
 					paramsBlock.innerHTML = '';
 					let modelBlock = document.getElementById('model');
@@ -132,6 +472,13 @@
 
 		</script>
 		<style>
+			#form{
+				margin-bottom: 50px;
+			}
+			#pdf-block,
+			#params{
+				margin-bottom: 20px;
+			}
 			#model th,
 			#model td{
 				border: 1px solid black;
@@ -170,6 +517,8 @@
 		</div>
 		<div id='Kvarenda'>
 			<div id='error'>
+			</div>
+			<div id='pdf-block'>
 			</div>
 			<div id='params'>
 			</div>

@@ -40,10 +40,10 @@
 					let paramsTable = '<table>';
 					let paramsData = [];
 					paramsData.push(
-										[{text:'Стоимость квартиры', style:'tableHeader'}, result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
-										[{text:'Ежемесячный платёж', style:'tableHeader'}, result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
-										[{text:'Количество платежей', style:'tableHeader'}, result.paymentsNumber],
-										[{text:'Начальный взнос', style:'tableHeader'}, (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})]
+										[{text:'Стоимость квартиры', style:'tableVHeader'}, result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
+										[{text:'Ежемесячный платёж', style:'tableVHeader'}, result.clientMonthlyPayment.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})],
+										[{text:'Количество платежей', style:'tableVHeader'}, result.paymentsNumber],
+										[{text:'Начальный взнос', style:'tableVHeader'}, (result.guaranteeFee + result.initialFee).toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})]
 									);
 
 					paramsTable = paramsTable + '<tr><td>Стоимость квартиры</td><td>' + result.propertyCost.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'}) + '</td></tr>';
