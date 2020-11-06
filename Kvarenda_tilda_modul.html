@@ -133,7 +133,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let paramsBlock = resultDOM.getElementById('params');
 			paramsBlock.innerHTML = paramsTable;
 
-			let modelTable ='<table><tr><th></th><th class="blue">Аннуитет: Задолженность, руб</th><th class="blue">Аннуитет: Проценты, руб</th><th class="blue">Аннуитет: Тело, руб</th><th class="blue">Аннуитет: Платёж, руб</th><th class="green">Дифф: Задолженность, руб</th><th class="green">Дифф: Проценты, руб</th><th class="green">Дифф: Тело, руб</th><th class="green">Дифф: Платёж, руб</th><th class="red">Плат: Задолженность, руб</th><th class="red">Плат: Аренда, руб</th><th class="red">Плат: Выкуп, руб</th><th class="red">Плат: Итого, руб</th><th class="yellow">Досрочность: Наш доход, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность:  Среднемес, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность: Выхлоп, руб</th><th class="yellow">Досрочность: Выкуп S, руб</th><th class="yellow">Досрочность: Штраф calc, руб</th><th class="yellow">Досрочность: Штраф макс, руб</th><th class="yellow">Досрочность: Макс год, руб</th><th class="yellow">Досрочность: Доход, руб</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Среднемес, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Мы заплатили, руб</th><th class="light-blue">Соскок: Мы получили, руб</th><th class="light-blue">Соскок: Выхлоп, руб</th><th class="light-blue">Соскок: Нужен доход, руб</th><th class="light-blue">Соскок: Излишек, руб</th><th class="light-blue">Соскок: S выкуп платежей, руб</th><th class="light-blue">Соскок: Возврат, руб</th><th class="light-blue">Соскок: Штраф, руб</th><th class="light-blue">Соскок: Штраф макс, руб</th><th class="light-blue">Соскок: Штраф <= выкуп, руб</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс, руб</th><th class="light-blue">Соскок: Итого, доход, руб</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr>';
+			let modelTable ='<table><thead><tr><th></th><th class="blue">Аннуитет: Задолженность, руб</th><th class="blue">Аннуитет: Проценты, руб</th><th class="blue">Аннуитет: Тело, руб</th><th class="blue">Аннуитет: Платёж, руб</th><th class="green">Дифф: Задолженность, руб</th><th class="green">Дифф: Проценты, руб</th><th class="green">Дифф: Тело, руб</th><th class="green">Дифф: Платёж, руб</th><th class="red">Плат: Задолженность, руб</th><th class="red">Плат: Аренда, руб</th><th class="red">Плат: Выкуп, руб</th><th class="red">Плат: Итого, руб</th><th class="yellow">Досрочность: Наш доход, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность:  Среднемес, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность: Выхлоп, руб</th><th class="yellow">Досрочность: Выкуп S, руб</th><th class="yellow">Досрочность: Штраф calc, руб</th><th class="yellow">Досрочность: Штраф макс, руб</th><th class="yellow">Досрочность: Макс год, руб</th><th class="yellow">Досрочность: Доход, руб</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Среднемес, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Мы заплатили, руб</th><th class="light-blue">Соскок: Мы получили, руб</th><th class="light-blue">Соскок: Выхлоп, руб</th><th class="light-blue">Соскок: Нужен доход, руб</th><th class="light-blue">Соскок: Излишек, руб</th><th class="light-blue">Соскок: S выкуп платежей, руб</th><th class="light-blue">Соскок: Возврат, руб</th><th class="light-blue">Соскок: Штраф, руб</th><th class="light-blue">Соскок: Штраф макс, руб</th><th class="light-blue">Соскок: Штраф <= выкуп, руб</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс, руб</th><th class="light-blue">Соскок: Итого, доход, руб</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr></thead>';
 
 			let tableData = [];
 
@@ -357,7 +357,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			result.model.forEach(function(item, i, arr) {
 				modelTable = modelTable + '<tr>';
 
-				modelTable = modelTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+				modelTable = modelTable + '<th>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</th>';
 				modelTable = modelTable + '<td>' + ((typeof(item.annuity_debt) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_debt))) + '</td>';
 				modelTable = modelTable + '<td>' + ((typeof(item.annuity_percents) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_percents))) + '</td>';
 				modelTable = modelTable + '<td>' + ((typeof(item.annuity_body) === 'undefined') ? '' : numberWithSpaces(Math.round(item.annuity_body))) + '</td>';
@@ -492,7 +492,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let paramsBlock = resultDOM.getElementById('params');
 			paramsBlock.innerHTML = paramsTable;
 
-			let customerTable ='<table><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr>';
+			let customerTable ='<table><thead><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr></thead>';
 
 			let tableData = [];
 			tableData.push([
@@ -542,7 +542,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 
 				customerTable = customerTable + '<tr>';
 
-				customerTable = customerTable + '<td>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</td>';
+				customerTable = customerTable + '<th>' + ((typeof(item.date) === 'undefined') ? '' : item.date.toLocaleString([], {day: '2-digit', month:'2-digit', year: 'numeric'})) + '</th>';
 				customerTable = customerTable + '<td>' + ((typeof(item.pmt_rent) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_rent))) + '</td>';
 				customerTable = customerTable + '<td>' + ((typeof(item.pmt_buyout) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_buyout))) + '</td>';
 				customerTable = customerTable + '<td>' + ((typeof(item.pmt_total) === 'undefined') ? '' : numberWithSpaces(Math.round(item.pmt_total))) + '</td>';
@@ -625,6 +625,30 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 		paymentsNumberInput.setAttribute('type', 'number');
 		initialFeeInput.setAttribute('type', 'number');
 		constructionTimeInput.setAttribute('type', 'number');
+		
+        document.addEventListener("wheel", function(event){
+            
+            if(document.activeElement.type === "number"){
+                document.activeElement.blur();
+            }
+            
+        });
+
+        let inputsNumber = document.querySelectorAll('input[type=number]');    
+        
+        inputsNumber.forEach(function(item, i, arr) {
+            
+           item.setAttribute('min', '0');
+
+            item.onkeydown = function(e) {
+               
+                if(e.keyCode==189 || e.keyCode==109 || e.keyCode == 69 || e.keyCode == 187) {
+                    return false;
+                }
+                
+            }
+
+        });
 
 		form.classList.remove('js-form-proccess');
 
@@ -689,6 +713,18 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	#params{
 		margin-bottom: 20px;
 	}
+	#table thead th{
+	    position: sticky;
+	    top: 0;
+	}
+	#table thead th:first-child {
+	    z-index: 1;
+	    left: 0;
+	}
+	#table tbody th {
+	    position: sticky;
+	    left: 0;
+	}
 	#table th,
 	#table td{
 		border: 1px solid black;
@@ -708,19 +744,22 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	.float-right{
 		float: right;
 	}
-	.blue{
+	th{
+	    background-color: white;
+	}
+	th.blue{
 		background-color: rgb(217, 226, 243);
 	}
-	.light-blue{
+	th.light-blue{
 		background-color: rgb(222, 235, 246);
 	}
-	.green{
+	th.green{
 		background-color: rgb(226, 239, 217);
 	}
-	.red{
+	th.red{
 		background-color: rgb(251, 228, 213);
 	}
-	.yellow{
+	th.yellow{
 		background-color: rgb(255, 243, 203);
 	}
 </style>
