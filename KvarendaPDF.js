@@ -60,7 +60,7 @@ function getCustomerTablePDF(header='', subheader='', text='', paramsData, table
 	if (tableType=='main'){
 
 		docDefinition.pageSize = {
-			width: 2000,
+			width: 1800,
 			height: 'auto'
 		}
 
