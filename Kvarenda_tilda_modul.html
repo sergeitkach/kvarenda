@@ -1,5 +1,5 @@
 <script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@3d6a76a244865bc9e4eea11c9bff9b1f5e5788a8/Kvarenda.js'></script>
-<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@4be2618c487ebd4cde8577ff90fe25e84e0b4c71/KvarendaPDF.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/sergeitkach/kvarenda@fec313302709075bb13bb8b773a03a10ef9d8f34/KvarendaPDF.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/pdfmake.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/pdfmake@0.1.68/build/vfs_fonts.min.js'></script>
 <script type='text/javascript'>
@@ -115,7 +115,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			paramsTable = paramsTable + '<tr><td>Ставка клиента, мес</td><td>' + result.clientRate.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
 			paramsTable = paramsTable + '<tr><td>Аннуитетный платёж</td><td>' + numberWithSpaces(Math.round(result.annuityPayment)) + ' руб' + '</td></tr>';
 
-			paramsTable = paramsTable + '</table><table class="float-right">';
+			paramsTable = paramsTable + '</table><table class="float-left">';
 
 			paramsTable = paramsTable + '<tr><td class="bold">Гарантийный взнос, руб</td><td class="bold">' + numberWithSpaces(Math.round(result.guaranteeFee)) + ' руб' + '</td></tr>';
 			paramsTable = paramsTable + '<tr><td>Арендный платёж в мес</td><td>' + numberWithSpaces(Math.round(result.rentPayment)) + ' руб' + '</td></tr>';
@@ -133,222 +133,294 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let paramsBlock = resultDOM.getElementById('params');
 			paramsBlock.innerHTML = paramsTable;
 
-			let modelTable ='<table><thead><tr><th></th><th class="blue">Аннуитет: Задолженность, руб</th><th class="blue">Аннуитет: Проценты, руб</th><th class="blue">Аннуитет: Тело, руб</th><th class="blue">Аннуитет: Платёж, руб</th><th class="green">Дифф: Задолженность, руб</th><th class="green">Дифф: Проценты, руб</th><th class="green">Дифф: Тело, руб</th><th class="green">Дифф: Платёж, руб</th><th class="red">Плат: Задолженность, руб</th><th class="red">Плат: Аренда, руб</th><th class="red">Плат: Выкуп, руб</th><th class="red">Плат: Итого, руб</th><th class="yellow">Досрочность: Наш доход, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность:  Среднемес, руб</th><th class="yellow">Досрочность: Нарастающ, руб</th><th class="yellow">Досрочность: Выхлоп, руб</th><th class="yellow">Досрочность: Выкуп S, руб</th><th class="yellow">Досрочность: Штраф calc, руб</th><th class="yellow">Досрочность: Штраф макс, руб</th><th class="yellow">Досрочность: Макс год, руб</th><th class="yellow">Досрочность: Доход, руб</th><th class="yellow">Досрочность: К норме</th><th class="light-blue">Соскок: Наш доход, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Среднемес, руб</th><th class="light-blue">Соскок: Нарастающ, руб</th><th class="light-blue">Соскок: Мы заплатили, руб</th><th class="light-blue">Соскок: Мы получили, руб</th><th class="light-blue">Соскок: Выхлоп, руб</th><th class="light-blue">Соскок: Нужен доход, руб</th><th class="light-blue">Соскок: Излишек, руб</th><th class="light-blue">Соскок: S выкуп платежей, руб</th><th class="light-blue">Соскок: Возврат, руб</th><th class="light-blue">Соскок: Штраф, руб</th><th class="light-blue">Соскок: Штраф макс, руб</th><th class="light-blue">Соскок: Штраф <= выкуп, руб</th><th class="light-blue">Соскок: Штраф % выкуп</th><th class="light-blue">Соскок: Штраф max %</th><th class="light-blue">Соскок: Штраф год макс, руб</th><th class="light-blue">Соскок: Итого, доход, руб</th><th class="light-blue">Соскок: Итого, доход</th><th class="light-blue"></th></tr></thead>';
+			let modelTable ='<table><thead><tr><th rowspan="2"></th><th  class="blue" colspan="4">Аннуитет</th><th class="green" colspan="4">Дифференциальный</th><th class="red" colspan="4">Платежи нам</th><th class="yellow" colspan="11">Досрочность</th><th class="light-blue" colspan="19">Соскок</th></tr><tr><th class="blue">Долг</th><th class="blue">% руб</th><th class="blue">Тело</th><th class="blue"> Платёж</th><th class="green">Долг</th><th class="green">% руб</th><th class="green">Тело</th><th class="green">Платёж</th><th class="red">Долг</th><th class="red">Аренда</th><th class="red">Выкуп</th><th class="red">Итого</th><th class="yellow">Наш доход</th><th class="yellow">Нарастающ</th><th class="yellow">Среднемес</th><th class="yellow">Нарастающ</th><th class="yellow">Выхлоп</th><th class="yellow">Выкуп S</th><th class="yellow">Штраф calc</th><th class="yellow">Штраф макс</th><th class="yellow">Макс год</th><th class="yellow">Доход факт</th><th class="yellow">К норме</th><th class="light-blue">Наш доход</th><th class="light-blue">Нарастающ</th><th class="light-blue">Среднемес</th><th class="light-blue">Нарастающ</th><th class="light-blue">Заплатили</th><th class="light-blue">Получили</th><th class="light-blue">Выхлоп</th><th class="light-blue">Нужен</th><th class="light-blue">Излишек</th><th class="light-blue">Выкуп S</th><th class="light-blue">Возврат</th><th class="light-blue">Штраф</th><th class="light-blue">Штраф макс</th><th class="light-blue">Штраф итог</th><th class="light-blue">Штраф % вык</th><th class="light-blue">Штраф % макс</th><th class="light-blue">Год макс</th><th class="light-blue">Доход руб</th><th class="light-blue">Доход %</th></tr></thead>';
 
 			let tableData = [];
-
+			
 			tableData.push([
 							{
+								rowSpan: 2,
 								text: 'Дата',
 								style: 'tableHeader'
 							},
 							{
-								text: 'Аннуитет: Задолженность',
+								colSpan: 4,
+								text: 'Аннуитет',
+								style: 'tableHeader',
+								fillColor: blue
+							},
+							{},
+							{},
+							{},
+							{
+								colSpan: 4,
+								text: 'Дифференциальный',
+								style: 'tableHeader',
+								fillColor: green
+							},
+							{},
+							{},
+							{},
+							{
+								colSpan: 4,
+								text: 'Платежи нам',
+								style: 'tableHeader',
+								fillColor: red
+							},
+							{},
+							{},
+							{},
+							{
+								colSpan: 11,
+								text: 'Досрочность',
+								style: 'tableHeader',
+								fillColor: yellow
+							},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{
+								colSpan: 19,
+								text: 'Соскок',
+								style: 'tableHeader',
+								fillColor: lightBlue
+							},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{},
+							{}
+						]);
+
+			tableData.push([
+							'',
+							{
+								text: 'Долг',
 								style: 'tableHeader',
 								fillColor: blue
 							},
 							{
-								text: 'Аннуитет: Проценты',
+								text: '% руб',
 								style: 'tableHeader',
 								fillColor: blue
 							},
 							{
-								text: 'Аннуитет: Тело',
+								text: 'Тело',
 								style: 'tableHeader',
 								fillColor: blue
 							},
 							{
-								text: 'Аннуитет: Платёж',
+								text: 'Платёж',
 								style: 'tableHeader',
 								fillColor: blue
 							},
 							{
-								text: 'Дифф: Задолженность',
+								text: 'Долг',
 								style: 'tableHeader',
 								fillColor: green
 							},
 							{
-								text: 'Дифф: Проценты',
+								text: '% руб',
 								style: 'tableHeader',
 								fillColor: green
 							},
 							{
-								text: 'Дифф: Тело',
+								text: 'Тело',
 								style: 'tableHeader',
 								fillColor: green
 							},
 							{
-								text: 'Дифф: Платёж',
+								text: 'Платёж',
 								style: 'tableHeader',
 								fillColor: green
 							},
 							{
-								text: 'Плат: Задолженность',
+								text: 'Долг',
 								style: 'tableHeader',
 								fillColor: red
 							},
 							{
-								text: 'Плат: Аренда',
+								text: 'Аренда',
 								style: 'tableHeader',
 								fillColor: red
 							},
 							{
-								text: 'Плат: Выкуп',
+								text: 'Выкуп',
 								style: 'tableHeader',
 								fillColor: red
 							},
 							{
-								text: 'Плат: Итого',
+								text: 'Итого',
 								style: 'tableHeader',
 								fillColor: red
 							},
 							{
-								text: 'Досрочность: Наш доход',
+								text: 'Наш доход',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Нарастающ',
+								text: 'Нарастающ',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность:  Среднемес',
+								text: 'Среднемес',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Нарастающ',
+								text: 'Нарастающ',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Выхлоп',
+								text: 'Выхлоп',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Досрочность: Выкуп S',
+								text: 'Выкуп S',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Штраф calc',
+								text: 'Штраф calc',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Штраф макс',
+								text: 'Штраф макс',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Макс год',
+								text: 'Макс год',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: Доход',
+								text: 'Доход факт',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Досрочность: К норме',
+								text: 'К норме',
 								style: 'tableHeader',
 								fillColor: yellow
 							},
 							{
-								text: 'Соскок: Наш доход',
+								text: 'Наш доход',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Нарастающ',
+								text: 'Нарастающ',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Среднемес',
+								text: 'Среднемес',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Нарастающ',
+								text: 'Нарастающ',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Мы заплатили',
+								text: 'Заплатили',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Мы получили',
+								text: 'Получили',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Выхлоп',
+								text: 'Выхлоп',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Нужен доход',
+								text: 'Нужен',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Излишек',
+								text: 'Излишек',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: S выкуп платежей',
+								text: 'Выкуп S',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Возврат',
+								text: 'Возврат',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф',
+								text: 'Штраф',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф макс',
+								text: 'Штраф макс',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф <= выкуп',
+								text: 'Штраф итог',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф % выкуп',
+								text: 'Штраф % вык',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф max %',
+								text: 'Штраф % макс',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Штраф год макс',
+								text: 'Год макс',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Итого, доход',
+								text: 'Доход руб',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							},
 							{
-								text: 'Соскок: Итого, доход',
+								text: 'Доход %',
 								style: 'tableHeader',
 								fillColor: lightBlue
 							}
@@ -691,9 +763,9 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 		overflow: hidden;
 	}
 	#Kvarenda{
-		font-family: 'Roboto',Arial,sans-serif;
+		font-family: 'OpinionPro',Arial,sans-serif;
 		height: 100%;
-		margin: 20px;
+		padding: 90px 20px 20px 20px;
 	}
 	#params table tr td:nth-child(even),
 	#table table td{
@@ -708,6 +780,18 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	}
 	#form{
 		margin-bottom: 50px;
+	}
+	#pdf-block {
+	    position: fixed;
+	    width: 100%;
+	    top: 0;
+	    left: 0;
+	    height: 70px;
+	    background-color: rgba(111,13,249,0.80);
+	    vertical-align: middle;
+	}
+	#params {
+	    font-size: 14px;
 	}
 	#pdf-block,
 	#params{
@@ -740,6 +824,7 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	}
 	.float-left{
 	    float: left;
+	    margin-right: 10px;
 	}
 	.float-right{
 		float: right;
@@ -761,5 +846,32 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	}
 	th.yellow{
 		background-color: rgb(255, 243, 203);
+	}
+	#pdf-block input[type=submit]{
+	    position: absolute;
+	    right: 15px;
+	    top: 15px;
+		color: #000000;
+		background-color: #ffffff;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		font-family: 'OpinionPro',Arial,sans-serif;
+		text-align: center;
+		height: 40px;
+		border: 0 none;
+		font-size: 14px;
+		padding-left: 30px;
+		padding-right: 30px;
+		-webkit-appearance: none;
+		font-weight: 700;
+		white-space: nowrap;
+		background-image: none;
+		cursor: pointer;
+		margin: 0;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		outline: none;
 	}
 </style>
