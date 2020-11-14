@@ -28,7 +28,7 @@ function setKvarendaParams(){
 
 function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime, resultHTML='', tableType='main'){
 
-	resultHTML = resultHTML + `<div id='Kvarenda'><div id='error'></div><div id='pdf-block'></div><div id='params'></div><div id='table' class='${tableType}'></div></div>`;
+	resultHTML = resultHTML + `<div id='Kvarenda'><div id='error'></div><div id='pdf-block'><div id='pdf-block-logo'><img src="https://static.tildacdn.com/tild3439-6562-4433-a635-383562393466/renalty-white-logo2.svg"></div><div id='pdf-block-center'></div><div id='pdf-block-button'></div></div><div id='params'></div><div id='result'><div id='table' class='${tableType}'></div></div></div>`;
 
 	resultDOM = new DOMParser().parseFromString(resultHTML, "text/html");
 
@@ -51,7 +51,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 
 		if(tableType=='main'){
 
-			let paramsTable = '<table class="float-left">';
+			let paramsTable = '<table>';
 			let paramsData = [];
 
 			paramsData.push(
@@ -115,7 +115,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			paramsTable = paramsTable + '<tr><td>Ставка клиента, мес</td><td>' + result.clientRate.toLocaleString('ru-RU', {style: 'percent'}) + '</td></tr>';
 			paramsTable = paramsTable + '<tr><td>Аннуитетный платёж</td><td>' + numberWithSpaces(Math.round(result.annuityPayment)) + ' руб' + '</td></tr>';
 
-			paramsTable = paramsTable + '</table><table class="float-left">';
+			paramsTable = paramsTable + '</table><table>';
 
 			paramsTable = paramsTable + '<tr><td class="bold">Гарантийный взнос, руб</td><td class="bold">' + numberWithSpaces(Math.round(result.guaranteeFee)) + ' руб' + '</td></tr>';
 			paramsTable = paramsTable + '<tr><td>Арендный платёж в мес</td><td>' + numberWithSpaces(Math.round(result.rentPayment)) + ' руб' + '</td></tr>';
@@ -133,7 +133,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let paramsBlock = resultDOM.getElementById('params');
 			paramsBlock.innerHTML = paramsTable;
 
-			let modelTable ='<table><thead><tr><th rowspan="2"></th><th  class="blue" colspan="4">Аннуитет</th><th class="green" colspan="4">Дифференциальный</th><th class="red" colspan="4">Платежи нам</th><th class="yellow" colspan="11">Досрочность</th><th class="light-blue" colspan="19">Соскок</th></tr><tr><th class="blue">Долг</th><th class="blue">% руб</th><th class="blue">Тело</th><th class="blue"> Платёж</th><th class="green">Долг</th><th class="green">% руб</th><th class="green">Тело</th><th class="green">Платёж</th><th class="red">Долг</th><th class="red">Аренда</th><th class="red">Выкуп</th><th class="red">Итого</th><th class="yellow">Наш доход</th><th class="yellow">Нарастающ</th><th class="yellow">Среднемес</th><th class="yellow">Нарастающ</th><th class="yellow">Выхлоп</th><th class="yellow">Выкуп S</th><th class="yellow">Штраф calc</th><th class="yellow">Штраф макс</th><th class="yellow">Макс год</th><th class="yellow">Доход факт</th><th class="yellow">К норме</th><th class="light-blue">Наш доход</th><th class="light-blue">Нарастающ</th><th class="light-blue">Среднемес</th><th class="light-blue">Нарастающ</th><th class="light-blue">Заплатили</th><th class="light-blue">Получили</th><th class="light-blue">Выхлоп</th><th class="light-blue">Нужен</th><th class="light-blue">Излишек</th><th class="light-blue">Выкуп S</th><th class="light-blue">Возврат</th><th class="light-blue">Штраф</th><th class="light-blue">Штраф макс</th><th class="light-blue">Штраф итог</th><th class="light-blue">Штраф % вык</th><th class="light-blue">Штраф % макс</th><th class="light-blue">Год макс</th><th class="light-blue">Доход руб</th><th class="light-blue">Доход %</th></tr></thead>';
+			let modelTable ='<table cellspacing="0" border="0"><thead><tr><th rowspan="2"></th><th  class="blue" colspan="4">Аннуитет</th><th class="green" colspan="4">Дифференциальный</th><th class="red" colspan="4">Платежи нам</th><th class="yellow" colspan="11">Досрочность</th><th class="light-blue" colspan="19">Соскок</th></tr><tr><th class="blue">Долг</th><th class="blue">% руб</th><th class="blue">Тело</th><th class="blue"> Платёж</th><th class="green">Долг</th><th class="green">% руб</th><th class="green">Тело</th><th class="green">Платёж</th><th class="red">Долг</th><th class="red">Аренда</th><th class="red">Выкуп</th><th class="red">Итого</th><th class="yellow">Наш доход</th><th class="yellow">Нарастающ</th><th class="yellow">Среднемес</th><th class="yellow">Нарастающ</th><th class="yellow">Выхлоп</th><th class="yellow">Выкуп S</th><th class="yellow">Штраф calc</th><th class="yellow">Штраф макс</th><th class="yellow">Макс год</th><th class="yellow">Доход факт</th><th class="yellow">К норме</th><th class="light-blue">Наш доход</th><th class="light-blue">Нарастающ</th><th class="light-blue">Среднемес</th><th class="light-blue">Нарастающ</th><th class="light-blue">Заплатили</th><th class="light-blue">Получили</th><th class="light-blue">Выхлоп</th><th class="light-blue">Нужен</th><th class="light-blue">Излишек</th><th class="light-blue">Выкуп S</th><th class="light-blue">Возврат</th><th class="light-blue">Штраф</th><th class="light-blue">Штраф макс</th><th class="light-blue">Штраф итог</th><th class="light-blue">Штраф % вык</th><th class="light-blue">Штраф % макс</th><th class="light-blue">Год макс</th><th class="light-blue">Доход руб</th><th class="light-blue">Доход %</th></tr></thead>';
 
 			let tableData = [];
 			
@@ -529,7 +529,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let modelBlock = resultDOM.getElementById('table');
 			modelBlock.innerHTML = modelTable;
 
-			let pdfBlock = resultDOM.getElementById('pdf-block');
+			let pdfBlock = resultDOM.getElementById('pdf-block-button');
 			pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='скачать в PDF'>";
 
 			let pdfBtn = resultDOM.getElementById('get-pdf');
@@ -564,7 +564,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let paramsBlock = resultDOM.getElementById('params');
 			paramsBlock.innerHTML = paramsTable;
 
-			let customerTable ='<table><thead><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr></thead>';
+			let customerTable ='<table cellspacing="0" border="0"><thead><tr><th>Дата</th><th>Арендный платёж, руб.</th><th>Выкупной платёж со взносами, руб.</th><th>Итого платёж, руб.</th><th>Комиссия за досрочное погашение, руб.</th><th>Сумма выкупных платежей, руб.</th><th>Штраф за расторжение: % от выкупных платежей</th><th>Штраф за расторжение: сумма, руб.</th><th>Возврат, руб.</th></tr></thead>';
 
 			let tableData = [];
 			tableData.push([
@@ -645,7 +645,7 @@ function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, co
 			let customerTableBlock = resultDOM.getElementById('table');
 			customerTableBlock.innerHTML = customerTable;
 
-			let pdfBlock = resultDOM.getElementById('pdf-block');
+			let pdfBlock = resultDOM.getElementById('pdf-block-button');
 			pdfBlock.innerHTML = "<input type='submit' id='get-pdf' value='скачать в PDF'>";
 
 			let pdfBtn = resultDOM.getElementById('get-pdf');
@@ -749,6 +749,16 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 			if(pdfBtn){
 				pdfBtn.onclick = calcResult.pdfBtnOnClick;
 			}
+			
+			let head_top = $('#table thead tr:first-child').first().position().top;
+    		$('#table thead tr:nth-child(2) th').each(function(index) {
+    			$(this).css('top', ($(this).position().top - head_top + 2) + 'px');
+    			$(this).css('border-bottom', '2px solid black');
+    		});
+    		
+    		$('#table.customer thead th').each(function(index) {
+    			$(this).css('border-bottom', '2px solid black');
+    		});
 
 			event.preventDefault();
 
@@ -765,56 +775,126 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	#Kvarenda{
 		font-family: 'OpinionPro',Arial,sans-serif;
 		height: 100%;
-		padding: 90px 20px 20px 20px;
+		width: 100%;
+		display: flex;
+		flex-flow: column;
+	}
+	#pdf-block {
+		height: 70px;
+		background-color: rgba(111,13,249,0.80);
+		display: table;
+		width: 100%;
+	}
+	#pdf-block-logo {
+		display: table-cell;
+		vertical-align: middle;
+		padding-left: 15px;
+	}
+	#pdf-block-logo img {
+		height: 40px;
+	}
+	#pdf-block-center {
+		display: table-cell;
+		width: 100%;
+	}
+	#pdf-block-button {
+		display: table-cell;
+		vertical-align: middle;
+		padding-right: 15px;
+	}
+	#pdf-block-button input[type=submit]{
+		color: #000000;
+		background-color: #ffffff;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		font-family: 'OpinionPro',Arial,sans-serif;
+		text-align: center;
+		height: 40px;
+		border: 0 none;
+		font-size: 14px;
+		padding-left: 30px;
+		padding-right: 30px;
+		font-weight: 700;
+		white-space: nowrap;
+		background-image: none;
+		cursor: pointer;
+		margin: 0;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		outline: none;
+	}
+	#params {
+		display: flex;
+		font-size: 14px;
+	}
+	#params table {
+		padding: 15px 0 15px 15px;
+	}
+	#result {
+		width: 100%;
+		height: inherit;
+		overflow-y: auto;
+		overflow-x: auto;
+    	}
+	#table {
+		height: calc(100% - 15px);
+		width: calc(100% - 30px);
+		margin: 0 15px 15px 15px;
+		overflow-y: auto;
+		overflow-x: auto;
+		font-size: 0.8em;
+		box-sizing: border-box;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+        border-left: 1px solid black;
+	}
+	#table.main table {
+		white-space: nowrap;
+	}
+	#table th,
+	#table td {
+		border-top: 1px solid black;
+		border-left: 1px solid black;
+        outline: none;
+        padding: 4px;
+        box-sizing: border-box;
+	}
+	#table thead th {
+	    position: sticky;
+	    top: 0;
+	}
+	#table thead tr:first-child th {
+	    z-index: 1;
+	}
+	#table thead tr:first-child th:first-child {
+		z-index: 2;
+		position: sticky;
+		left: 0;
+		border-bottom: 2px solid black;
+		border-left: none;
+	}
+	#table.main thead tr:first-child th:first-child {
+	    border-right: 1px solid black;
+	}
+	#table tbody tr th:first-child {
+		position: sticky;
+		left: 0;
+		border-left: none;
+	}
+	#table.main tbody tr th:first-child {
+	    border-right: 1px solid black;
+	}
+	#table table {
+	    border-bottom: 1px solid black;
 	}
 	#params table tr td:nth-child(even),
 	#table table td{
 		text-align: right;
 	}
-	#table{
-		height: 65%;
-		width: 100%;
-        overflow-y: auto;
-        overflow-x: auto;
-		font-size: 0.8em;
-	}
 	#form{
 		margin-bottom: 50px;
-	}
-	#pdf-block {
-	    position: fixed;
-	    width: 100%;
-	    top: 0;
-	    left: 0;
-	    height: 70px;
-	    background-color: rgba(111,13,249,0.80);
-	    vertical-align: middle;
-	}
-	#params {
-	    font-size: 14px;
-	}
-	#pdf-block,
-	#params{
-		margin-bottom: 20px;
-	}
-	#table thead th{
-	    position: sticky;
-	    top: 0;
-	}
-	#table thead th:first-child {
-	    z-index: 1;
-	    left: 0;
-	}
-	#table tbody th {
-	    position: sticky;
-	    left: 0;
-	}
-	#table th,
-	#table td{
-		border: 1px solid black;
-	}
-	#table.main{
-		height: 50%;
 	}
 	#error{
 		color: red;
@@ -822,14 +902,7 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	.bold{
 		font-weight: bold;
 	}
-	.float-left{
-	    float: left;
-	    margin-right: 10px;
-	}
-	.float-right{
-		float: right;
-	}
-	th{
+	th {
 	    background-color: white;
 	}
 	th.blue{
@@ -846,32 +919,5 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	}
 	th.yellow{
 		background-color: rgb(255, 243, 203);
-	}
-	#pdf-block input[type=submit]{
-	    position: absolute;
-	    right: 15px;
-	    top: 15px;
-		color: #000000;
-		background-color: #ffffff;
-		border-radius: 3px;
-		-moz-border-radius: 3px;
-		-webkit-border-radius: 3px;
-		font-family: 'OpinionPro',Arial,sans-serif;
-		text-align: center;
-		height: 40px;
-		border: 0 none;
-		font-size: 14px;
-		padding-left: 30px;
-		padding-right: 30px;
-		-webkit-appearance: none;
-		font-weight: 700;
-		white-space: nowrap;
-		background-image: none;
-		cursor: pointer;
-		margin: 0;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
-		outline: none;
 	}
 </style>
