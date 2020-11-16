@@ -28,7 +28,7 @@ function setKvarendaParams(){
 
 function calc(propertyCost, clientMonthlyPayment, paymentsNumber, initialFee, constructionTime, resultHTML='', tableType='main'){
 
-	resultHTML = resultHTML + `<div id='Kvarenda'><div id='error'></div><div id='pdf-block'><div id='pdf-block-logo'><img src="https://static.tildacdn.com/tild3439-6562-4433-a635-383562393466/renalty-white-logo2.svg"></div><div id='pdf-block-center'></div><div id='pdf-block-button'></div></div><div id='params'></div><div id='result'><div id='table' class='${tableType}'></div></div></div>`;
+	resultHTML = resultHTML + `<div id='Kvarenda'><div id='pdf-block'><div id='pdf-block-logo'><img src="https://static.tildacdn.com/tild3439-6562-4433-a635-383562393466/renalty-white-logo2.svg"></div><div id='pdf-block-center'></div><div id='pdf-block-button'></div></div><div id='error'></div><div id='params'></div><div id='result'><div id='table' class='${tableType}'></div></div></div>`;
 
 	resultDOM = new DOMParser().parseFromString(resultHTML, "text/html");
 
@@ -750,15 +750,21 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 				pdfBtn.onclick = calcResult.pdfBtnOnClick;
 			}
 			
-			let head_top = $('#table thead tr:first-child').first().position().top;
-    		$('#table thead tr:nth-child(2) th').each(function(index) {
-    			$(this).css('top', ($(this).position().top - head_top + 2) + 'px');
-    			$(this).css('border-bottom', '2px solid black');
-    		});
-    		
-    		$('#table.customer thead th').each(function(index) {
-    			$(this).css('border-bottom', '2px solid black');
-    		});
+			let head = $('#table thead tr:first-child');
+			
+			if (head.length) {
+    			let head_top = head.first().position().top;
+        		$('#table thead tr:nth-child(2) th').each(function(index) {
+        			$(this).css('top', ($(this).position().top - head_top + 2) + 'px');
+        			$(this).css('border-bottom', '2px solid black');
+        		});
+        		
+        		$('#table.customer thead th').each(function(index) {
+        			$(this).css('border-bottom', '2px solid black');
+        		});
+			} else {
+			    $('#table').css('border', 'none');    
+			}
 
 			event.preventDefault();
 
@@ -898,6 +904,7 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 	}
 	#error{
 		color: red;
+		padding: 15px;
 	}
 	.bold{
 		font-weight: bold;
