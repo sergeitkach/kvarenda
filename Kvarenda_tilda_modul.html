@@ -753,17 +753,20 @@ function numberWithSpaces(x, symbol = "&nbsp;") {
 			let head = $('#table thead tr:first-child');
 			
 			if (head.length) {
-    			let head_top = head.first().position().top;
-        		$('#table thead tr:nth-child(2) th').each(function(index) {
-        			$(this).css('top', ($(this).position().top - head_top + 2) + 'px');
-        			$(this).css('border-bottom', '2px solid black');
-        		});
+				$('#error').css('display', 'none');
+			    
+    				let head_top = head.first().position().top;
+    			
+        			$('#table thead tr:nth-child(2) th').each(function(index) {
+        				$(this).css('top', ($(this).position().top - head_top + 2) + 'px');
+        				$(this).css('border-bottom', '2px solid black');
+        			});
         		
-        		$('#table.customer thead th').each(function(index) {
-        			$(this).css('border-bottom', '2px solid black');
-        		});
+        			$('#table.customer thead th').each(function(index) {
+        				$(this).css('border-bottom', '2px solid black');
+        			});
 			} else {
-			    $('#table').css('border', 'none');    
+			    $('#table').css('border', 'none');
 			}
 
 			event.preventDefault();
